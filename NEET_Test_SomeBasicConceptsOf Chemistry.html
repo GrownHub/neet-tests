@@ -15,16 +15,29 @@
     .submit-btn[disabled] { background: #b7dbbe; color: #fff; cursor: not-allowed; }
     .save-btn { background: #005ba3; color: #fff; }
     .result {
-      margin-top: 32px;
-      font-size: 22px;
-      font-weight: bold;
-      background: #ecfaec;
-      color: #326c33;
-      padding: 32px 0 22px 0;
-      border-radius: 10px;
-      text-align:center;
-      border:1px solid #c7ebc7;
-    }
+  margin-top: 32px;
+  font-size: 22px;
+  font-weight: bold;
+  background: #ecfaec;
+  color: #326c33;
+  padding: 32px 0 22px 0;
+  border-radius: 10px;
+  text-align:center;
+  border:1px solid #c7ebc7;
+}
+
+/* <-- THIS SHOULD BE OUTSIDE OF .result! */
+.unattended {
+  color: #fff;
+  background: #e94444 !important;
+  font-weight: bold;
+  padding: 2px 8px;
+  border-radius: 6px;
+  margin-left: 14px;
+  font-size: 0.97em;
+  display: inline-block;
+}
+
     .locked-message { margin: 32px 0 8px 0; color: #bf0606; font-weight: bold; text-align: center; }
     form.disabled { pointer-events: none; opacity: 0.98; }
     #timer { font-size: 1.1em; font-weight: bold; color: #278c28; float: right; margin-top:-28px; margin-right:8px; }
@@ -468,36 +481,52 @@
     localStorage.removeItem(TIMELEFT_KEY);
   }
 
-  function markQuiz(sel, reviewMode) {
-    let score = 0, total = shuffled.length;
-    for(let i=1; i<=total; i++) {
-      let user = sel['q'+i];
-      let radios = document.getElementsByName("q"+i);
+function markQuiz(sel, reviewMode) {
+  let score = 0, total = shuffled.length;
+  for(let i=1; i<=total; i++) {
+    let user = sel['q'+i];
+    let radios = document.getElementsByName("q"+i);
+    // Remove all old classes and "Un Attended" marks
+    for(let op of radios) {
+      op.parentElement.classList.remove('correct','incorrect');
+      let oldMark = op.parentElement.querySelector('.unattended');
+      if (oldMark) oldMark.remove();
+    }
+    let qIdx = shuffled[i-1];
+    let correctIdx = questionsData[qIdx].correct;
+    let correctLetter = String.fromCharCode(65 + correctIdx);
+
+    if(user) {
       for(let op of radios) {
-        op.parentElement.classList.remove('correct','incorrect');
-      }
-      let qIdx = shuffled[i-1];
-      let correctIdx = questionsData[qIdx].correct;
-      let correctLetter = String.fromCharCode(65 + correctIdx);
-      if(user) {
-        for(let op of radios) {
-          if(op.value===user) {
-            if(op.value===correctLetter) {
-              score++;
-              op.parentElement.classList.add('correct');
-            } else {
-              op.parentElement.classList.add('incorrect');
-            }
+        if(op.value===user) {
+          if(op.value===correctLetter) {
+            score++;
+            op.parentElement.classList.add('correct');
+          } else {
+            op.parentElement.classList.add('incorrect');
           }
         }
       }
-      for(let op of radios) {
-        if(op.value===correctLetter) op.parentElement.classList.add('correct');
+    } else {
+      // If user didn't select any option, add "Un Attended" label after the options
+      let parent = radios[radios.length-1]?.parentElement?.parentElement;
+      if (parent && !parent.querySelector('.unattended')) {
+        let label = document.createElement("span");
+        label.className = "unattended";
+        label.innerText = "Un Attended";
+        parent.appendChild(label);
       }
-      document.getElementById("exp"+i).style.display="block";
     }
-    return score;
+
+    // Always show correct in green for review
+    for(let op of radios) {
+      if(op.value===correctLetter) op.parentElement.classList.add('correct');
+    }
+    document.getElementById("exp"+i).style.display="block";
   }
+  return score;
+}
+
 
   function saveReview() {
     let clone = document.documentElement.cloneNode(true);
