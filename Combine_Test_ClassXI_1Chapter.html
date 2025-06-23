@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>GWPL NEET Preparations – First Repeat Tes (138Q)</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f9f9f9; margin: 20px; color:#222; }
+    .question { margin-bottom: 20px; padding: 15px; background: #fff; border-radius: 8px; box-shadow: 0 0 5px rgba(0,0,0,0.08); }
+    .options { margin-left: 20px; }
+    .correct { background-color: #d4edda !important; }
+    .incorrect { background-color: #f8d7da !important; }
+    .explanation { font-style: italic; margin-top: 6px; color: #555; display:none; }
+    .submit-btn, .save-btn { margin: 28px 0 12px 0; padding: 12px 28px; font-size: 16px; border-radius: 8px; border: none; cursor: pointer; }
+    .submit-btn { background: #31b54c; color: #fff; }
+    .submit-btn[disabled] { background: #b7dbbe; color: #fff; cursor: not-allowed; }
+    .save-btn { background: #005ba3; color: #fff; }
+    .result {
+      margin-top: 32px;
+      font-size: 22px;
+      font-weight: bold;
+      background: #ecfaec;
+      color: #326c33;
+      padding: 32px 0 22px 0;
+      border-radius: 10px;
+      text-align:center;
+      border:1px solid #c7ebc7;
+    }
+    .unattended {
+      color: #fff;
+      background: #e94444 !important;
+      font-weight: bold;
+      padding: 2px 8px;
+      border-radius: 6px;
+      margin-left: 14px;
+      font-size: 0.97em;
+      display: inline-block;
+    }
+    .locked-message { margin: 32px 0 8px 0; color: #bf0606; font-weight: bold; text-align: center; }
+    form.disabled { pointer-events: none; opacity: 0.98; }
+    #timer { font-size: 1.1em; font-weight: bold; color: #278c28; float: right; margin-top:-28px; margin-right:8px; }
+    #usedTime { color: #326c33; margin-top:12px; font-size:20px; text-align:center;}
+  </style>
+</head>
+<body>
+<h2>GWPL NEET Preparations</h2>
+<h3>Repeat Test – NEET Test (138 Questions)</h3>
+<span id="timer"></span>
+<form id="quizForm"></form>
+<div style="text-align:center;">
+  <button class="submit-btn" id="submitBtn" onclick="submitQuiz()" type="button">Submit</button>
+  <button class="save-btn" id="saveBtn" onclick="saveReview()" type="button">Save Review as HTML</button>
+</div>
+<div class="locked-message" id="lockedMsg" style="display:none;">This test has already been submitted.<br>Review mode only.</div>
+<div id="usedTime" style="display:none;"></div>
+
+<script>
+// CONFIGURATION
+const QUESTIONS_COUNT = 138;
+const TIME_PER_QUESTION = 72; // seconds per Physics question
+const TOTAL_TIME = QUESTIONS_COUNT * TIME_PER_QUESTION;
+
+// Unique storage keys for Physics
+const LOCK_KEY = 'phy_units_138q_locked';
+const SCORE_KEY = 'phy_units_138q_score';
+const TIME_KEY = 'phy_units_138q_time';
+const SEL_KEY = 'phy_units_138q_sel';
+const SHUFFLE_KEY = 'phy_units_138q_shuffle';
+const TIMELEFT_KEY = 'phy_units_138q_timeleft';
+
+// 138 NEET Questions Test The Living World, Some Basic Concepts of chemistry and Units and Measurements Phisycs questions
+const questionsData = [
+/* ==== PHYSICS: Units and Measurements ==== */
+{"q":"Which of the following is not a fundamental physical quantity?","opts":["Length","Time","Force","Mass"],"correct":2,"exp":"Force is a derived quantity; the rest are fundamental."},
+{"q":"The SI unit of electric current is:","opts":["Ampere","Coulomb","Volt","Ohm"],"correct":0,"exp":"Ampere (A) is the SI unit of electric current."},
+{"q":"The number of significant figures in 0.00360 is:","opts":["2","3","4","5"],"correct":2,"exp":"0.00360 has three significant figures (3, 6, 0)."},
+{"q":"The dimensional formula for velocity is:","opts":["M⁰L¹T⁻¹","M¹L⁰T⁻²","M¹L¹T⁻¹","M⁰L¹T¹"],"correct":0,"exp":"Velocity: displacement/time = L/T."},
+{"q":"One light year is approximately:","opts":["9.46 × 10¹² m","3.00 × 10⁸ m","1.60 × 10⁻¹⁹ m","1.00 × 10⁶ m"],"correct":0,"exp":"1 light year = distance light travels in one year ≈ 9.46 × 10¹² m."},
+{"q":"The most accurate measuring device below is:","opts":["Vernier calipers","Meter scale","Screw gauge","Protractor"],"correct":2,"exp":"Screw gauge can measure up to 0.01 mm or better."},
+{"q":"Which pair has different dimensions?","opts":["Force and weight","Impulse and momentum","Pressure and stress","Work and energy"],"correct":1,"exp":"Impulse and momentum have the same units but different dimensions: impulse = force × time, momentum = mass × velocity."},
+{"q":"The error least likely to be reduced by repeated measurements is:","opts":["Random error","Gross error","Systematic error","Statistical error"],"correct":2,"exp":"Systematic errors are constant and not minimized by repetition."},
+{"q":"In the measurement 7.20 cm, the number of significant digits is:","opts":["1","2","3","4"],"correct":2,"exp":"All nonzero digits and the zero after the decimal are significant."},
+{"q":"The dimension of Planck’s constant (h) is:","opts":["ML²T⁻¹","MLT⁻¹","ML²T⁻²","ML²T⁻³"],"correct":0,"exp":"E = hν ⇒ [h] = [E]/[ν] = ML²T⁻² / T⁻¹ = ML²T⁻¹."},
+{"q":"Which is the SI unit of pressure?","opts":["Bar","Pascal","Atmosphere","Torr"],"correct":1,"exp":"SI unit of pressure is Pascal (Pa) = N/m²."},
+{"q":"Which of the following pairs does not have the same dimensions?","opts":["Energy and work","Torque and work","Momentum and impulse","Power and force"],"correct":3,"exp":"Power and force: [P] = ML²T⁻³, [F] = MLT⁻²."},
+{"q":"The dimensional formula for universal gravitational constant (G) is:","opts":["M⁻¹L³T⁻²","M¹L³T⁻²","M⁻²L³T⁻²","M⁻¹L²T⁻³"],"correct":0,"exp":"From F = G M₁M₂/r², solve for G: [G] = [F][r²]/[M²] = MLT⁻² × L² / M² = M⁻¹L³T⁻²."},
+{"q":"Which of the following is a derived unit?","opts":["Second","Kilogram","Kelvin","Newton"],"correct":3,"exp":"Newton is the SI unit of force, derived from base units."},
+{"q":"How many significant digits are there in 0.0200?","opts":["1","2","3","4"],"correct":2,"exp":"0.0200 has 3 significant figures (2,0,0)."},
+{"q":"The dimension of resistance is:","opts":["ML²T⁻²A⁻²","ML²T⁻³A⁻²","ML²T⁻²A⁻¹","MLT⁻³A⁻²"],"correct":1,"exp":"V = IR ⇒ [R] = [V]/[I] = ML²T⁻³A⁻²."},
+{"q":"Which one is not a dimensionless quantity?","opts":["Strain","Angle","Specific gravity","Velocity"],"correct":3,"exp":"Velocity has dimensions (LT⁻¹), others are ratios and dimensionless."},
+{"q":"The dimensional formula for energy is:","opts":["ML²T⁻²","MLT⁻¹","MLT⁻²","ML⁻¹T⁻²"],"correct":0,"exp":"Energy (work): force × displacement = MLT⁻² × L = ML²T⁻²."},
+{"q":"A measurement is recorded as 5.600 g. The number of significant digits is:","opts":["2","3","4","5"],"correct":2,"exp":"5.600: digits 5, 6, 0, 0 are all significant (4)."},
+{"q":"Which of these is not an SI unit?","opts":["Kelvin","Joule","Erg","Candela"],"correct":2,"exp":"Erg is a CGS unit of energy, not SI."},
+{"q":"The dimensional formula of pressure is:","opts":["ML⁻¹T⁻²","MLT⁻²","MLT⁻¹","M⁻¹LT⁻²"],"correct":0,"exp":"Pressure = force/area = (MLT⁻²)/L² = ML⁻¹T⁻²."},
+{"q":"The least count of a standard metric ruler is:","opts":["0.01 cm","0.1 cm","1 cm","0.001 cm"],"correct":1,"exp":"A standard metric ruler can usually measure to 0.1 cm."},
+{"q":"Dimension of angular velocity is:","opts":["T⁻¹","L⁻¹","LT⁻¹","L²T⁻²"],"correct":0,"exp":"Angular velocity: angle/time, and angle is dimensionless ⇒ T⁻¹."},
+{"q":"Which one is the base unit in SI?","opts":["Litre","Gram","Mole","Watt"],"correct":2,"exp":"Mole is a base SI unit for amount of substance."},
+{"q":"One nanometer is equal to:","opts":["10⁻⁹ m","10⁻⁶ m","10⁻³ m","10⁻¹² m"],"correct":0,"exp":"nano = 10⁻⁹, so 1 nm = 10⁻⁹ m."},
+{"q":"A physical quantity that does not have the same dimension as energy is:","opts":["Work","Torque","Power","Heat"],"correct":2,"exp":"Power = work/time, its dimension is ML²T⁻³."},
+{"q":"The SI unit of solid angle is:","opts":["Degree","Steradian","Radian","Revolution"],"correct":1,"exp":"Solid angle SI unit is steradian (sr)."},
+{"q":"The result of the addition 2.31 m + 3.1 m expressed with correct significant figures is:","opts":["5.41 m","5.4 m","5.410 m","5 m"],"correct":1,"exp":"The answer should have the least decimal places: 3.1 has 1, so result is 5.4 m."},
+{"q":"Dimension of surface tension is:","opts":["MT⁻²","ML⁰T⁻²","MT⁻¹","ML⁰T⁰"],"correct":0,"exp":"Surface tension = force/length = MLT⁻² / L = MT⁻²."},
+{"q":"If error in measurement of radius is 2%, what is the percentage error in calculation of area (A = πr²)?","opts":["2%","4%","1%","8%"],"correct":1,"exp":"Error multiplies by the power: 2% × 2 = 4%."},
+{"q":"Which of the following quantities has the same dimension as momentum?","opts":["Impulse","Work","Energy","Torque"],"correct":0,"exp":"Impulse and momentum share the same dimension: MLT⁻¹."},
+{"q":"Which of these cannot be zero?","opts":["Systematic error","Random error","Absolute error","Relative error"],"correct":2,"exp":"Absolute error is always positive or zero; others can be zero."},
+{"q":"Which is the most precise device to measure length?","opts":["Meter scale","Vernier calipers","Screw gauge","Tape"],"correct":2,"exp":"Screw gauge is more precise than vernier caliper or scale."},
+{"q":"Which of the following is not a unit of length?","opts":["Fermi","Angstrom","Parsec","Calorie"],"correct":3,"exp":"Calorie is a unit of energy."},
+{"q":"The SI unit of luminous intensity is:","opts":["Candela","Lux","Lumen","Nit"],"correct":0,"exp":"Candela (cd) is the SI unit of luminous intensity."},
+{"q":"Which of the following measurements is most precise?","opts":["3.100 m","3.1 m","3.10 m","3.1000 m"],"correct":3,"exp":"3.1000 m has the most significant digits (5)."},
+{"q":"If x = a²b³, error in a is 2% and error in b is 1%, total error in x is:","opts":["4%","7%","5%","2%"],"correct":1,"exp":"Error in x = 2 × 2% + 3 × 1% = 7%."},
+{"q":"The dimension of magnetic flux is:","opts":["ML²T⁻²A⁻¹","ML²T⁻³A⁻¹","ML²T⁻²A⁻²","ML²T⁻¹A⁻¹"],"correct":0,"exp":"Weber (magnetic flux): V·s = (ML²T⁻³A⁻¹)·T = ML²T⁻²A⁻¹."},
+{"q":"Which physical quantity has the same unit as strain?","opts":["Angle","Pressure","Stress","Velocity"],"correct":0,"exp":"Strain and angle are both dimensionless."},
+{"q":"The speed of light in SI units is:","opts":["3.00 × 10⁸ m/s","3.00 × 10⁶ m/s","1.50 × 10⁸ m/s","1.00 × 10⁸ m/s"],"correct":0,"exp":"c = 3.00 × 10⁸ m/s."},
+{"q":"A quantity that has the same dimension as force is:","opts":["Pressure","Energy","Weight","Power"],"correct":2,"exp":"Weight is a type of force (mg)."},
+{"q":"Dimensional formula of work is the same as:","opts":["Torque","Energy","Both A and B","None"],"correct":2,"exp":"Work and torque both have dimensions of ML²T⁻²."},
+{"q":"Which is not a correct pair of unit and quantity?","opts":["Volt – Potential difference","Joule – Energy","Ampere – Magnetic flux","Watt – Power"],"correct":2,"exp":"Ampere is the unit of current, not magnetic flux."},
+{"q":"The SI unit of thermodynamic temperature is:","opts":["Celsius","Fahrenheit","Kelvin","Rankine"],"correct":2,"exp":"SI unit of temperature is kelvin (K)."},
+{"q":"Which of the following is not a physical quantity?","opts":["Energy","Beauty","Mass","Density"],"correct":1,"exp":"Beauty is not a physical quantity."},
+
+/* ==== CHEMISTRY: Some Basic Concepts of Chemistry ==== */
+// ...Paste all 45 Chemistry MCQs here, same format...
+/* ==== CHEMISTRY: Some Basic Concepts of Chemistry ==== */
+{"q":"Which of the following is not a postulate of Dalton’s atomic theory?","opts":["Atoms of different elements have different masses","Atoms can be created or destroyed in chemical reactions","Atoms of a given element are identical in mass and properties","Atoms combine in simple whole-number ratios to form compounds"],"correct":1,"exp":"Dalton said atoms cannot be created or destroyed in chemical reactions."},
+{"q":"One mole of carbon atoms weighs exactly:","opts":["6.022 × 10²³ g","12 g","1 g","18 g"],"correct":1,"exp":"One mole of carbon-12 weighs exactly 12 grams."},
+{"q":"Which law is illustrated when 12g of carbon reacts completely with 32g of oxygen to form 44g of carbon dioxide?","opts":["Law of Definite Proportions","Law of Multiple Proportions","Law of Conservation of Mass","Law of Reciprocal Proportions"],"correct":2,"exp":"Mass is conserved; total mass of reactants equals total mass of products."},
+{"q":"The SI unit of amount of substance is:","opts":["Mole","Gram","Kilogram","Liter"],"correct":0,"exp":"The mole is the SI unit of amount of substance."},
+{"q":"Avogadro’s number is:","opts":["6.022 × 10²²","6.022 × 10²³","3.011 × 10²³","3.011 × 10²²"],"correct":1,"exp":"Avogadro’s number is 6.022 × 10²³ particles per mole."},
+{"q":"Which of the following is a triatomic molecule?","opts":["H₂","O₂","O₃","NaCl"],"correct":2,"exp":"Ozone (O₃) is a triatomic molecule."},
+{"q":"Which of the following has the greatest number of atoms?","opts":["8g O₂","4g H₂","28g N₂","16g CH₄"],"correct":1,"exp":"4g of H₂ has 2 moles, which is the greatest number of atoms."},
+{"q":"22.4 L of any gas at STP contains:","opts":["3.011 × 10²³ molecules","6.022 × 10²³ molecules","1 mole of atoms","2 moles of molecules"],"correct":1,"exp":"22.4 L of gas at STP contains 1 mole = 6.022 × 10²³ molecules."},
+{"q":"What is the empirical formula of glucose (C₆H₁₂O₆)?","opts":["CH₂O","C₆H₁₂O₆","C₁₂H₂₂O₁₁","C₂H₄O₂"],"correct":0,"exp":"The empirical formula of glucose is CH₂O."},
+{"q":"The number of moles in 22g of CO₂ is:","opts":["0.5","1","2","4"],"correct":0,"exp":"Moles = 22g/44g/mol = 0.5 mol."},
+{"q":"The volume occupied by 2 moles of N₂ at STP is:","opts":["11.2 L","22.4 L","44.8 L","56.0 L"],"correct":2,"exp":"1 mole = 22.4 L at STP, so 2 moles = 44.8 L."},
+{"q":"The mass of 0.5 mole of oxygen atoms (O) is:","opts":["8 g","16 g","32 g","4 g"],"correct":0,"exp":"Mass = 0.5 × 16 = 8g."},
+{"q":"What is the molar mass of Ca(OH)₂?","opts":["56 g/mol","74 g/mol","80 g/mol","18 g/mol"],"correct":1,"exp":"Ca=40, O=16×2, H=1×2; total = 40+32+2=74g/mol."},
+{"q":"Which of the following expresses concentration?","opts":["Molarity","Normality","Molality","All of these"],"correct":3,"exp":"All express solution concentration."},
+{"q":"The limiting reagent is:","opts":["Always in excess","Always a reactant","The reactant used up first","The product formed last"],"correct":2,"exp":"The limiting reagent is the reactant used up first in a chemical reaction."},
+{"q":"Which of the following pairs is incorrect?","opts":["Mass – Kilogram","Temperature – Kelvin","Amount of substance – Mole","Volume – Ampere"],"correct":3,"exp":"Ampere is the SI unit of electric current, not volume."},
+{"q":"The percentage of nitrogen by mass in ammonia (NH₃) is:","opts":["14%","82%","18%","80%"],"correct":1,"exp":"N=14, H=1×3=3, Total=17. %N = 14/17×100 ≈ 82%"},
+{"q":"Which has the smallest mass?","opts":["1 atom of H","1 molecule of H₂","1 molecule of H₂O","1 molecule of CO₂"],"correct":0,"exp":"Single atom of H has the smallest mass."},
+{"q":"Which of the following is a mixture?","opts":["Sodium chloride","Calcium carbonate","Air","Glucose"],"correct":2,"exp":"Air is a mixture of gases."},
+{"q":"If 5.6L of a gas at STP weighs 12g, its molar mass is:","opts":["24 g/mol","36 g/mol","48 g/mol","12 g/mol"],"correct":2,"exp":"5.6 L = 0.25 mol, molar mass = 12/0.25 = 48 g/mol."},
+{"q":"Which of the following is not a physical change?","opts":["Melting of ice","Sublimation of iodine","Rusting of iron","Boiling of water"],"correct":2,"exp":"Rusting of iron is a chemical change."},
+{"q":"Which element is represented by the symbol ‘Na’?","opts":["Nitrogen","Sodium","Neon","Nickel"],"correct":1,"exp":"Na is sodium."},
+{"q":"The empirical formula of C₆H₆ is:","opts":["CH","C₆H₆","C₃H₃","C₂H₂"],"correct":0,"exp":"C:H ratio = 6:6 = 1:1, so empirical formula is CH."},
+{"q":"Which statement about isotopes is true?","opts":["They have same number of neutrons","They have same atomic number","They have same mass number","They have different chemical properties"],"correct":1,"exp":"Isotopes have the same atomic number."},
+{"q":"0.5 mole of Na⁺ ions contains how many ions?","opts":["3.011 × 10²³","6.022 × 10²³","1 × 10²³","0.5 × 10²³"],"correct":0,"exp":"0.5 mol × 6.022×10²³ = 3.011×10²³ ions."},
+{"q":"How many significant figures are there in 0.02030?","opts":["2","3","4","5"],"correct":2,"exp":"Significant figures: 2,0,3,0 → 4 significant digits."},
+{"q":"The density of a substance is 2 g/cm³. Its SI unit is:","opts":["g/cm³","kg/m³","g/m³","kg/cm³"],"correct":1,"exp":"The SI unit of density is kg/m³."},
+{"q":"Which law is involved in the formation of water from H₂ and O₂?","opts":["Law of Conservation of Mass","Law of Definite Proportions","Law of Multiple Proportions","All of these"],"correct":3,"exp":"All these laws are involved in chemical reactions."},
+{"q":"The molar mass of Na₂CO₃ is:","opts":["84 g/mol","86 g/mol","106 g/mol","52 g/mol"],"correct":2,"exp":"Na=23×2, C=12, O=16×3 → 46+12+48=106 g/mol."},
+{"q":"The correct relationship for molarity (M) is:","opts":["M = moles of solute/liters of solution","M = moles of solute/grams of solvent","M = grams of solute/liters of solution","M = moles of solvent/liters of solution"],"correct":0,"exp":"Molarity = moles of solute per liter of solution."},
+{"q":"The term “stoichiometry” deals with:","opts":["Study of structure of molecules","Calculation of amounts of reactants and products","Calculation of density","Measurement of atomic radius"],"correct":1,"exp":"Stoichiometry involves calculation of amounts of reactants and products."},
+{"q":"The limiting reagent is the substance:","opts":["Present in excess","Consumed first in a reaction","Not involved in the reaction","Reactant with lowest mass"],"correct":1,"exp":"The limiting reagent is consumed first."},
+{"q":"In which of the following, empirical and molecular formula are the same?","opts":["Glucose","Acetic acid","Ethylene","Benzene"],"correct":2,"exp":"Empirical and molecular formula of ethylene is C₂H₄."},
+{"q":"The molecular mass of H₂SO₄ is:","opts":["98 u","100 u","96 u","112 u"],"correct":0,"exp":"H=2×1, S=32, O=16×4 = 2+32+64=98u."},
+{"q":"The percentage composition of carbon in methane (CH₄) is:","opts":["12%","25%","75%","80%"],"correct":2,"exp":"C=12, H=1×4=4; %C=12/16×100=75%."},
+{"q":"Which law states “A chemical compound always contains the same elements in the same proportion by mass”?","opts":["Law of multiple proportions","Law of reciprocal proportions","Law of constant proportions","Law of conservation of mass"],"correct":2,"exp":"Law of constant proportions."},
+{"q":"A sample contains 0.1 mole of water molecules. Number of molecules present is:","opts":["6.022 × 10²¹","6.022 × 10²²","3.011 × 10²³","6.022 × 10²⁰"],"correct":1,"exp":"0.1 × 6.022×10²³ = 6.022×10²² molecules."},
+{"q":"Which of the following solutions contains 1 mole of NaCl?","opts":["58.5g NaCl in 500 mL water","29.25g NaCl in 1L water","58.5g NaCl in 1L water","5.85g NaCl in 100 mL water"],"correct":2,"exp":"58.5g NaCl is 1 mole, so C is correct."},
+{"q":"A limiting reagent in a chemical reaction:","opts":["Decides the amount of product formed","Is always in excess","Has the highest molar mass","Is not consumed"],"correct":0,"exp":"Limiting reagent decides the amount of product formed."},
+{"q":"The molality of a solution is defined as:","opts":["Moles of solute per kg of solvent","Moles of solute per liter of solution","Grams of solute per kg of solution","Moles of solvent per kg of solution"],"correct":0,"exp":"Molality = moles of solute per kg of solvent."},
+{"q":"What is the volume (at STP) of 0.5 mol of SO₂ gas?","opts":["11.2 L","5.6 L","22.4 L","1.12 L"],"correct":0,"exp":"1 mol = 22.4L at STP; 0.5 mol = 11.2L."},
+{"q":"What is the mass of 1.5 moles of H₂O?","opts":["27 g","18 g","36 g","24 g"],"correct":0,"exp":"1.5 × 18 = 27g."},
+{"q":"If a compound contains 40% C, 6.7% H and 53.3% O by mass, the empirical formula is:","opts":["CH₂O","C₂H₄O₂","C₃H₆O₃","C₄H₈O₄"],"correct":0,"exp":"Empirical formula for these ratios is CH₂O."},
+{"q":"The number of molecules in 5.6 L of oxygen gas at STP is:","opts":["6.022 × 10²²","3.011 × 10²³","1.204 × 10²³","2.011 × 10²³"],"correct":0,"exp":"5.6 L = 0.25 mol; 0.25 × 6.022×10²³ = 1.506×10²³ ≈ 6.022×10²² molecules."},
+{"q":"Which among the following is a molecular formula?","opts":["CH","C₆H₁₂O₆","CH₂O","C₂H₄"],"correct":1,"exp":"C₆H₁₂O₆ is a molecular formula."},
+
+/* ==== BIOLOGY: The Living World ==== */
+// ...Paste all 45 Biology MCQs here, same format...
+/* ==== BIOLOGY: The Living World ==== */
+{"q":"Which of the following is NOT a characteristic feature of living organisms?","opts":["Metabolism","Growth","Reproduction","Crystallization"],"correct":3,"exp":"Crystallization is a feature of non-living things."},
+{"q":"Who is called the ‘Father of Taxonomy’?","opts":["Charles Darwin","Carolus Linnaeus","Aristotle","Robert Hooke"],"correct":1,"exp":"Carolus Linnaeus is known as the Father of Taxonomy."},
+{"q":"The branch of biology dealing with identification, nomenclature, and classification is called:","opts":["Ecology","Taxonomy","Morphology","Physiology"],"correct":1,"exp":"Taxonomy deals with identification, nomenclature, and classification."},
+{"q":"Binomial nomenclature means:","opts":["Two names: genus and species","Two individuals named for each species","Each organism has two identities","None of these"],"correct":0,"exp":"Binomial nomenclature uses genus and species names."},
+{"q":"The correct way to write a scientific name is:","opts":["homo sapiens","Homo sapiens","Homo Sapiens","Homo sapiens Linnaeus"],"correct":1,"exp":"Genus capitalized, species lower case, both italicized/underlined: Homo sapiens."},
+{"q":"Who introduced the five-kingdom classification?","opts":["Whittaker","Linnaeus","Haeckel","Aristotle"],"correct":0,"exp":"R.H. Whittaker proposed the five-kingdom system."},
+{"q":"Which among the following is NOT a universal feature of living organisms?","opts":["Cellular organization","Irritability","Locomotion","Metabolism"],"correct":2,"exp":"Locomotion is not universal; plants, for example, are stationary."},
+{"q":"Which one of the following shows both living and non-living characteristics?","opts":["Virus","Bacteria","Moss","Fungi"],"correct":0,"exp":"Viruses are living inside hosts, non-living outside."},
+{"q":"ICBN stands for:","opts":["International Code of Biological Nomenclature","Indian Council for Botanical Nomenclature","International Code of Botanical Nomenclature","Indian Classification of Botanical Names"],"correct":2,"exp":"ICBN is International Code of Botanical Nomenclature."},
+{"q":"Which is not a domain of life according to Woese’s system?","opts":["Eukarya","Archaea","Bacteria","Monera"],"correct":3,"exp":"Monera is not a domain; the domains are Archaea, Bacteria, and Eukarya."},
+{"q":"The book 'Systema Naturae' was written by:","opts":["Linnaeus","Darwin","Aristotle","Lamarck"],"correct":0,"exp":"Linnaeus authored 'Systema Naturae'."},
+{"q":"Species is:","opts":["A group of related genera","A group of similar individuals which can interbreed","A taxonomic group below genus","Both B and C"],"correct":3,"exp":"Species is both: interbreeding individuals and below genus."},
+{"q":"The largest taxonomic category is:","opts":["Family","Genus","Class","Kingdom"],"correct":3,"exp":"Kingdom is the highest category among the options."},
+{"q":"Which taxonomic aid preserves plant specimens for study?","opts":["Herbarium","Museum","Botanical garden","Key"],"correct":0,"exp":"A herbarium is a collection of preserved plant specimens."},
+{"q":"Which is not a component of scientific name?","opts":["Genus","Species","Family","All are components"],"correct":2,"exp":"Scientific name contains only genus and species."},
+{"q":"The hierarchy of taxonomic categories was first introduced by:","opts":["Linnaeus","Aristotle","Theophrastus","Haeckel"],"correct":0,"exp":"Linnaeus introduced hierarchical classification."},
+{"q":"Which among these is a correct ascending order of taxonomic categories?","opts":["Species < Family < Genus < Order","Genus < Species < Order < Family","Species < Genus < Family < Order","Order < Family < Genus < Species"],"correct":2,"exp":"Species < Genus < Family < Order."},
+{"q":"A taxonomic key is mainly used for:","opts":["Preservation of specimens","Identification of organisms","Growing rare species","All of these"],"correct":1,"exp":"Keys help in identification based on contrasting characters."},
+{"q":"Which taxonomic aid is best for studying animal skeletons?","opts":["Herbarium","Museum","Key","Botanical garden"],"correct":1,"exp":"Museums preserve animal specimens, including skeletons."},
+{"q":"The basic unit of classification is:","opts":["Order","Species","Genus","Class"],"correct":1,"exp":"Species is the fundamental unit in classification."},
+{"q":"Who is known as the ‘Father of Zoology’?","opts":["Aristotle","Darwin","Linnaeus","Lamarck"],"correct":0,"exp":"Aristotle is called the Father of Zoology."},
+{"q":"The correct sequence in the taxonomic hierarchy is:","opts":["Class < Phylum < Order < Family","Order < Class < Family < Phylum","Species < Genus < Family < Order","Genus < Family < Order < Class"],"correct":2,"exp":"Species < Genus < Family < Order."},
+{"q":"The first word in a scientific name represents:","opts":["Species","Family","Genus","Order"],"correct":2,"exp":"The first word is the Genus."},
+{"q":"Nomenclature is governed by:","opts":["ICBN and ICZN","Systema Naturae","Systematics","Keys"],"correct":0,"exp":"ICBN for plants, ICZN for animals."},
+{"q":"All living organisms are linked to one another because:","opts":["They use the same genetic code","They have similar organs","They reproduce","All of the above"],"correct":0,"exp":"Genetic code is universal among living organisms."},
+{"q":"Botanical gardens are primarily meant for:","opts":["Growing rare and endangered plants","Studying animal diversity","Preserving fossils","Classification of insects"],"correct":0,"exp":"Botanical gardens conserve plant diversity."},
+{"q":"Growth in living organisms is:","opts":["Only increase in mass","Only increase in number","Irreversible increase in mass and number","Always accompanied by reproduction"],"correct":2,"exp":"Growth is irreversible increase in mass and/or number."},
+{"q":"Metabolism is:","opts":["Sum total of all chemical reactions in an organism","Sum total of anabolism and catabolism","Both A and B","None of these"],"correct":2,"exp":"Metabolism = anabolism + catabolism."},
+{"q":"Which of the following is not a taxonomic category?","opts":["Phylum","Kingdom","Family","Group"],"correct":3,"exp":"'Group' is not a formal taxonomic category."},
+{"q":"Living organisms exhibit:","opts":["Self-replication","Self-regulation","Response to stimuli","All of these"],"correct":3,"exp":"All are characteristics of living organisms."},
+{"q":"An organism that shows autotrophic nutrition is:","opts":["Amoeba","Mushroom","Mango tree","Frog"],"correct":2,"exp":"Mango tree is an autotroph (makes its own food)."},
+{"q":"The process of assigning scientific names is called:","opts":["Classification","Identification","Nomenclature","Systematics"],"correct":2,"exp":"Nomenclature is the process of assigning scientific names."},
+{"q":"Taxon refers to:","opts":["A rank or level in a taxonomic hierarchy","A group of related families","A group of related species","A group of related orders"],"correct":0,"exp":"Taxon: any rank in the hierarchy (species, genus, etc.)."},
+{"q":"Which among the following is NOT a taxonomic aid?","opts":["Key","Herbarium","Botanical garden","Enzyme"],"correct":3,"exp":"Enzyme is not a taxonomic aid."},
+{"q":"Who coined the term ‘species’?","opts":["John Ray","Linnaeus","Darwin","Whittaker"],"correct":0,"exp":"John Ray coined the term ‘species’."},
+{"q":"Which among the following is not an example of ex-situ conservation?","opts":["Botanical garden","Seed bank","National park","Herbarium"],"correct":2,"exp":"National parks are in-situ; others are ex-situ."},
+{"q":"‘Key’ in taxonomy refers to:","opts":["Collection of plant specimens","A booklet for identification","A taxonomic category","A preserved animal"],"correct":1,"exp":"Key is a booklet or tool for identification."},
+{"q":"ICZN is applicable to:","opts":["Plants","Animals","Fungi","Algae"],"correct":1,"exp":"ICZN governs animal nomenclature."},
+{"q":"Growth in animals is:","opts":["Unlimited","Limited","Reversible","By cell division only"],"correct":1,"exp":"Animals exhibit limited growth."},
+{"q":"The science dealing with the study of diversity of organisms is:","opts":["Morphology","Anatomy","Taxonomy","Systematics"],"correct":3,"exp":"Systematics is the study of diversity and relationships."},
+{"q":"A collection of dried, pressed plant specimens mounted on sheets is:","opts":["Museum","Herbarium","Key","Botanical garden"],"correct":1,"exp":"Herbarium preserves dried, pressed plants."},
+{"q":"Which is the correct scientific name for the housefly?","opts":["Musca domestica","musca Domestica","Musca Domestica","Musca domestica Linnaeus"],"correct":0,"exp":"Correct format: Musca domestica (italicized/underlined)."},
+{"q":"A place where living plants are grown and maintained under natural conditions is:","opts":["Herbarium","Botanical garden","Museum","Key"],"correct":1,"exp":"Botanical gardens grow living plants for study."},
+{"q":"Which taxonomic category directly follows ‘Order’ in the hierarchy?","opts":["Family","Genus","Species","Class"],"correct":0,"exp":"Order is followed by Family."},
+{"q":"Species diversity in living organisms is due to:","opts":["Environmental changes","Genetic variation","Both A and B","Cell division"],"correct":2,"exp":"Both genetics and environment drive species diversity."},
+{"q":"Which is NOT a feature used in taxonomic keys?","opts":["Contrasting characters","Couplet formation","Alternative statements","Photographs"],"correct":3,"exp":"Photographs are not used in keys."},
+{"q":"The aim of classification is to:","opts":["Give scientific names to organisms","Describe all plants","Group organisms based on similarities","Preserve extinct species"],"correct":2,"exp":"Classification aims to group by similarities."},
+{"q":"Systematics includes:","opts":["Identification","Classification","Nomenclature","All of these"],"correct":3,"exp":"Systematics = Identification + Nomenclature + Classification."}
+];
+
+// Shuffle/restore logic and core test engine
+let shuffled = [];
+let timerInt = null;
+let remaining = TOTAL_TIME;
+let testStarted = false;
+let startTimestamp = null;
+let usedTime = 0;
+
+function shuffleArray(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    let j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function renderQuiz(shufOrder, selAnswers = {}) {
+  let form = document.getElementById('quizForm');
+  form.innerHTML = '';
+  for (let idx = 0; idx < shufOrder.length; idx++) {
+    const qObj = questionsData[shufOrder[idx]];
+    const qNum = idx + 1;
+    let qDiv = document.createElement('div');
+    qDiv.className = "question";
+    qDiv.innerHTML = `<p><strong>Q${qNum}.</strong> ${qObj.q}</p>`;
+    let optDiv = document.createElement('div');
+    optDiv.className = "options";
+    for (let opt = 0; opt < qObj.opts.length; opt++) {
+      let id = `q${qNum}o${opt}`;
+      let checked = (selAnswers[`q${qNum}`] === String.fromCharCode(65 + opt)) ? 'checked' : '';
+      optDiv.innerHTML += `<label><input type="radio" name="q${qNum}" value="${String.fromCharCode(65 + opt)}" id="${id}" ${checked}> ${qObj.opts[opt]}</label><br>`;
+    }
+    qDiv.appendChild(optDiv);
+    let expDiv = document.createElement('div');
+    expDiv.className = "explanation";
+    expDiv.id = `exp${qNum}`;
+    expDiv.style.display = 'none';
+    expDiv.textContent = qObj.exp;
+    qDiv.appendChild(expDiv);
+    form.appendChild(qDiv);
+  }
+
+  // Save answers on every change (refresh-resume logic)
+  setTimeout(() => {
+    document.querySelectorAll('input[type=radio]').forEach(radio => {
+      radio.addEventListener('change', function() {
+        let sel = {};
+        for(let i=1; i<=shufOrder.length; i++) {
+          let options = document.getElementsByName("q"+i);
+          for(let op of options) if(op.checked) sel['q'+i]=op.value;
+        }
+        localStorage.setItem(SEL_KEY, JSON.stringify(sel));
+      });
+    });
+  }, 100);
+}
+
+function formatTime(sec) {
+  let m = Math.floor(sec/60), s = sec%60;
+  return `${m}m ${s<10?'0'+s:s}s`;
+}
+
+function updateTimer() {
+  let timerElem = document.getElementById('timer');
+  if (remaining > 0) {
+    timerElem.innerHTML = "Time Left: " + formatTime(remaining);
+    remaining--;
+    localStorage.setItem(TIMELEFT_KEY, remaining);
+  } else {
+    timerElem.innerHTML = "Time Left: 0m 00s";
+    stopTimer();
+    autoSubmit();
+  }
+}
+
+function startTimer() {
+  testStarted = true;
+  startTimestamp = Date.now();
+  if (timerInt) clearInterval(timerInt);
+  document.getElementById('timer').innerHTML = "Time Left: " + formatTime(remaining);
+  timerInt = setInterval(updateTimer, 1000);
+}
+
+function stopTimer() {
+  if(timerInt) clearInterval(timerInt);
+  if (testStarted && startTimestamp) {
+    usedTime = Math.max(TOTAL_TIME - remaining, 0);
+  }
+}
+
+window.onload = function() {
+  let locked = localStorage.getItem(LOCK_KEY);
+  let shuffleSaved = localStorage.getItem(SHUFFLE_KEY);
+  let selSaved = localStorage.getItem(SEL_KEY);
+  let tleft = parseInt(localStorage.getItem(TIMELEFT_KEY));
+  if (locked === 'yes' && shuffleSaved) {
+    shuffled = JSON.parse(shuffleSaved);
+    let sel = JSON.parse(selSaved || '{}');
+    renderQuiz(shuffled, sel);
+    markQuiz(sel, true);
+    document.getElementById('timer').innerHTML = "Total Time: " + formatTime(TOTAL_TIME);
+    document.getElementById("lockedMsg").style.display = "";
+    document.getElementById("saveBtn").style.display = "";
+    document.getElementById("submitBtn").disabled = true;
+    document.getElementById("quizForm").classList.add("disabled");
+    for (let i = 1; i <= shuffled.length; i++) document.getElementById("exp"+i).style.display="block";
+    let radios = document.querySelectorAll('input[type=radio]');
+    radios.forEach(r => r.disabled = true);
+    // Restore the score/result box
+    let scoreHtml = localStorage.getItem(SCORE_KEY) || '';
+    let prevResult = document.querySelector('.result');
+    if (prevResult) prevResult.remove();
+    if (scoreHtml) {
+      document.getElementById("quizForm").insertAdjacentHTML("afterend", scoreHtml);
+    }
+  }
+  else if (shuffleSaved && selSaved && tleft > 0) {
+    shuffled = JSON.parse(shuffleSaved);
+    let sel = JSON.parse(selSaved || '{}');
+    renderQuiz(shuffled, sel);
+    remaining = tleft;
+    startTimer();
+  } else {
+    shuffled = Array.from(Array(questionsData.length).keys());
+    shuffleArray(shuffled);
+    renderQuiz(shuffled);
+    localStorage.setItem(SHUFFLE_KEY, JSON.stringify(shuffled));
+    remaining = TOTAL_TIME;
+    localStorage.setItem(TIMELEFT_KEY, remaining);
+    startTimer();
+  }
+};
+
+function autoSubmit() {
+  if(localStorage.getItem(LOCK_KEY)==='yes') return;
+  alert("Time is up! The test will be auto-submitted.");
+  submitQuiz();
+}
+
+function submitQuiz() {
+  if(localStorage.getItem(LOCK_KEY)==='yes') return;
+  let sel = {};
+  let total = shuffled.length, score = 0;
+  for(let i=1; i<=total; i++) {
+    let options = document.getElementsByName("q"+i);
+    for(let op of options) {
+      if(op.checked) sel['q'+i]=op.value;
+    }
+  }
+  score = markQuiz(sel, false);
+  for(let i=1; i<=total; i++) document.getElementById("exp"+i).style.display="block";
+  stopTimer();
+  let timeUsed = TOTAL_TIME - remaining;
+  if(timeUsed <= 0 || isNaN(timeUsed)) timeUsed = TOTAL_TIME;
+  let percent = ((score/total)*100).toFixed(2);
+  let resultText = `<div class="result"><div>Test submitted!</div><br><span style="font-size: 2em; color: #326c33;"><b>Score: ${score} / ${total} (${percent}%)</b></span><br><span id="timeStr">Time: ${formatTime(timeUsed)}</span></div>`;
+  let resultDiv = document.getElementById("result");
+  if (resultDiv) resultDiv.outerHTML = resultText;
+  else document.getElementById("quizForm").insertAdjacentHTML("afterend", resultText);
+  document.getElementById("usedTime").innerHTML = ``;
+  document.getElementById("usedTime").style.display = "none";
+  document.getElementById("submitBtn").disabled = true;
+  document.getElementById("quizForm").classList.add("disabled");
+  document.getElementById("saveBtn").style.display="";
+  document.getElementById("lockedMsg").style.display="";
+  let radios = document.querySelectorAll('input[type=radio]');
+  radios.forEach(r => r.disabled = true);
+  localStorage.setItem(LOCK_KEY, 'yes');
+  localStorage.setItem(SEL_KEY, JSON.stringify(sel));
+  localStorage.setItem(SCORE_KEY, resultText);
+  localStorage.setItem(TIME_KEY, timeUsed);
+  localStorage.setItem(SHUFFLE_KEY, JSON.stringify(shuffled));
+  localStorage.removeItem(TIMELEFT_KEY);
+}
+
+function markQuiz(sel, reviewMode) {
+  let score = 0, total = shuffled.length;
+  for(let i=1; i<=total; i++) {
+    let user = sel['q'+i];
+    let radios = document.getElementsByName("q"+i);
+    for(let op of radios) {
+      op.parentElement.classList.remove('correct','incorrect');
+      let oldMark = op.parentElement.querySelector('.unattended');
+      if (oldMark) oldMark.remove();
+    }
+    let qIdx = shuffled[i-1];
+    let correctIdx = questionsData[qIdx].correct;
+    let correctLetter = String.fromCharCode(65 + correctIdx);
+
+    if(user) {
+      for(let op of radios) {
+        if(op.value===user) {
+          if(op.value===correctLetter) {
+            score++;
+            op.parentElement.classList.add('correct');
+          } else {
+            op.parentElement.classList.add('incorrect');
+          }
+        }
+      }
+    } else {
+      let parent = radios[radios.length-1]?.parentElement?.parentElement;
+      if (parent && !parent.querySelector('.unattended')) {
+        let label = document.createElement("span");
+        label.className = "unattended";
+        label.innerText = "Un Attended";
+        parent.appendChild(label);
+      }
+    }
+    for(let op of radios) {
+      if(op.value===correctLetter) op.parentElement.classList.add('correct');
+    }
+    document.getElementById("exp"+i).style.display="block";
+  }
+  return score;
+}
+
+function saveReview() {
+  let clone = document.documentElement.cloneNode(true);
+  let scripts = clone.querySelectorAll('script');
+  scripts.forEach(s => s.remove());
+  let submitBtn = clone.querySelector('.submit-btn');
+  if (submitBtn) submitBtn.remove();
+  let saveBtn = clone.querySelector('.save-btn');
+  if (saveBtn) saveBtn.remove();
+  let timerElem = clone.querySelector('#timer');
+  if (timerElem) timerElem.remove();
+  let lockedMsg = clone.querySelector('#lockedMsg');
+  if (lockedMsg) lockedMsg.style.display = "";
+  let quizForm = clone.querySelector('#quizForm');
+  if (quizForm) quizForm.classList.add('disabled');
+  let radios = clone.querySelectorAll('input[type=radio]');
+  radios.forEach(r => {
+    r.disabled = true;
+    r.setAttribute('disabled', 'disabled');
+  });
+  let html = "<!DOCTYPE html>\n" + clone.outerHTML.replace(/<title>(.*?)<\/title>/, '<title>$1 (Review Only)</title>');
+  let blob = new Blob([html], {type:"text/html"});
+  let a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "Combine_Units_138Q_Review.html";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+</script>
+</body>
+</html>
