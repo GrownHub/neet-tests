@@ -1,0 +1,1352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>GWPL NEET Preparations – "Reproduction in Organisms" (103Q)</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f9f9f9; margin: 20px; color:#222; }
+    .question { margin-bottom: 20px; padding: 15px; background: #fff; border-radius: 8px; box-shadow: 0 0 5px rgba(0,0,0,0.08); }
+    .options { margin-left: 20px; }
+    .correct { background-color: #d4edda !important; }
+    .incorrect { background-color: #f8d7da !important; }
+    .explanation { font-style: italic; margin-top: 6px; color: #555; display:none; }
+    .submit-btn, .save-btn { margin: 28px 0 12px 0; padding: 12px 28px; font-size: 16px; border-radius: 8px; border: none; cursor: pointer; }
+    .submit-btn { background: #31b54c; color: #fff; }
+    .submit-btn[disabled] { background: #b7dbbe; color: #fff; cursor: not-allowed; }
+    .save-btn { background: #005ba3; color: #fff; }
+    .result {
+      margin-top: 32px;
+      font-size: 22px;
+      font-weight: bold;
+      background: #ecfaec;
+      color: #326c33;
+      padding: 32px 0 22px 0;
+      border-radius: 10px;
+      text-align:center;
+      border:1px solid #c7ebc7;
+    }
+    .unattended {
+      color: #fff;
+      background: #e94444 !important;
+      font-weight: bold;
+      padding: 2px 8px;
+      border-radius: 6px;
+      margin-left: 14px;
+      font-size: 0.97em;
+      display: inline-block;
+    }
+    .locked-message { margin: 32px 0 8px 0; color: #bf0606; font-weight: bold; text-align: center; }
+    form.disabled { pointer-events: none; opacity: 0.98; }
+    #timer { font-size: 1.1em; font-weight: bold; color: #278c28; float: right; margin-top:-28px; margin-right:8px; }
+    #usedTime { color: #326c33; margin-top:12px; font-size:20px; text-align:center;}
+  </style>
+</head>
+<body>
+<h2>GWPL NEET Preparations</h2>
+<h3>Reproduction in Organisms (103 Questions)</h3>
+<span id="timer"></span>
+<form id="quizForm"></form>
+<div style="text-align:center;">
+  <button class="submit-btn" id="submitBtn" onclick="submitQuiz()" type="button">Submit</button>
+  <button class="save-btn" id="saveBtn" onclick="saveReview()" type="button">Save Review as HTML</button>
+</div>
+<div class="locked-message" id="lockedMsg" style="display:none;">This test has already been submitted.<br>Review mode only.</div>
+<div id="usedTime" style="display:none;"></div>
+
+<script>
+// CONFIGURATION
+const QUESTIONS_COUNT = 103;
+const TIME_PER_QUESTION = 72; // seconds per Physics, Chemistry, Biology question
+const TOTAL_TIME = QUESTIONS_COUNT * TIME_PER_QUESTION;
+
+// Unique storage keys for Physics
+const LOCK_KEY = 'phy_units_103q_locked';
+const SCORE_KEY = 'phy_units_103q_score';
+const TIME_KEY = 'phy_units_103q_time';
+const SEL_KEY = 'phy_units_103q_sel';
+const SHUFFLE_KEY = 'phy_units_103q_shuffle';
+const TIMELEFT_KEY = 'phy_units_103q_timeleft';
+
+// 103 NEET Questions Reproduction in Organisms
+const questionsData = [
+{
+q: "Which of the following best defines reproduction?",
+opts: [
+  "Formation of new individuals from pre-existing ones",
+  "Physical growth of organisms",
+  "Response to stimuli",
+  "Metabolism"
+], correct: 0,
+exp: "Reproduction is the biological process of producing new individuals similar to the parents."
+},
+{
+q: "Which of these is NOT a type of asexual reproduction?",
+opts: [
+  "Binary fission",
+  "Budding",
+  "Fragmentation",
+  "Syngamy"
+], correct: 3,
+exp: "Syngamy is a sexual process involving fusion of gametes."
+},
+{
+q: "Which organism reproduces by binary fission?",
+opts: [
+  "Amoeba",
+  "Yeast",
+  "Hydra",
+  "Moss"
+], correct: 0,
+exp: "Amoeba divides by binary fission (asexual)."
+},
+{
+q: "Budding is commonly observed in:",
+opts: [
+  "Hydra",
+  "Paramecium",
+  "Planaria",
+  "Amoeba"
+], correct: 0,
+exp: "Hydra and yeast commonly reproduce by budding."
+},
+{
+q: "In which of the following does fragmentation serve as a means of reproduction?",
+opts: [
+  "Spirogyra",
+  "Plasmodium",
+  "Frog",
+  "Yeast"
+], correct: 0,
+exp: "Spirogyra, an alga, reproduces by fragmentation."
+},
+{
+q: "What is the lifespan of an organism?",
+opts: [
+  "Period from birth to natural death",
+  "Time taken for reproduction",
+  "Time taken for growth",
+  "Time from fertilization to gamete formation"
+], correct: 0,
+exp: "Lifespan refers to the period from birth to natural death."
+},
+{
+q: "Which statement about lifespan is correct?",
+opts: [
+  "It is not correlated with size or complexity",
+  "All organisms have the same lifespan",
+  "It is always longer in larger animals",
+  "All plants have shorter lifespan than animals"
+], correct: 0,
+exp: "Lifespan does not always correlate with size or complexity."
+},
+{
+q: "What is the term for fusion of two gametes?",
+opts: [
+  "Syngamy",
+  "Parthenogenesis",
+  "Fragmentation",
+  "Budding"
+], correct: 0,
+exp: "Syngamy is fusion of male and female gametes."
+},
+{
+q: "Parthenogenesis involves:",
+opts: [
+  "Development of an organism from an unfertilized egg",
+  "Fusion of gametes",
+  "Budding",
+  "Binary fission"
+], correct: 0,
+exp: "Parthenogenesis is development from an unfertilized egg."
+},
+{
+q: "Which of the following is NOT a vegetative propagule?",
+opts: [
+  "Leaf bud",
+  "Tuber",
+  "Root",
+  "Zygote"
+], correct: 3,
+exp: "Zygote is a product of sexual reproduction, not vegetative propagation."
+},
+{
+q: "Grafting is a method of:",
+opts: [
+  "Artificial vegetative propagation",
+  "Natural vegetative propagation",
+  "Sexual reproduction",
+  "Parthenogenesis"
+], correct: 0,
+exp: "Grafting is an artificial vegetative propagation method in plants."
+},
+{
+q: "Which plant reproduces naturally through runners?",
+opts: [
+  "Strawberry",
+  "Mango",
+  "Maize",
+  "Pea"
+], correct: 0,
+exp: "Strawberry spreads by runners, a natural vegetative propagation."
+},
+{
+q: "Zoospores are:",
+opts: [
+  "Motile asexual spores",
+  "Non-motile sexual spores",
+  "Germinating pollen grains",
+  "Egg cells"
+], correct: 0,
+exp: "Zoospores are motile, flagellated asexual spores in some algae and fungi."
+},
+{
+q: "The period between birth and natural death of an organism is:",
+opts: [
+  "Lifespan",
+  "Juvenile phase",
+  "Reproductive phase",
+  "Senescent phase"
+], correct: 0,
+exp: "The period is called lifespan."
+},
+{
+q: "Which of these is NOT a method of asexual reproduction?",
+opts: [
+  "Fission",
+  "Conjugation",
+  "Budding",
+  "Sporulation"
+], correct: 1,
+exp: "Conjugation involves exchange of genetic material—sexual process."
+},
+{
+q: "Vegetative propagation by stem tuber is seen in:",
+opts: [
+  "Potato",
+  "Ginger",
+  "Onion",
+  "Bryophyllum"
+], correct: 0,
+exp: "Potato propagates vegetatively by stem tubers."
+},
+{
+q: "Offspring produced by asexual reproduction are:",
+opts: [
+  "Genetically identical to parent",
+  "Genetically different from parent",
+  "Always diploid",
+  "Always haploid"
+], correct: 0,
+exp: "Asexual reproduction creates clones, genetically identical."
+},
+{
+q: "Which one is a monoecious plant?",
+opts: [
+  "Coconut",
+  "Papaya",
+  "Date palm",
+  "Castor"
+], correct: 0,
+exp: "Coconut has both male and female flowers on the same plant (monoecious)."
+},
+{
+q: "Which of these shows bisexuality in animals?",
+opts: [
+  "Earthworm",
+  "Cockroach",
+  "Peacock",
+  "Frog"
+], correct: 0,
+exp: "Earthworm is a hermaphrodite (bisexual animal)."
+},
+{
+q: "The period of reproductive inactivity in seasonal breeders is called:",
+opts: [
+  "Anestrus",
+  "Estrus",
+  "Oestrus",
+  "Metestrus"
+], correct: 0,
+exp: "Anestrus is the non-reproductive phase."
+},
+{
+q: "The most common method of reproduction in bacteria is:",
+opts: [
+  "Binary fission",
+  "Budding",
+  "Conjugation",
+  "Fragmentation"
+], correct: 0,
+exp: "Bacteria usually reproduce by binary fission."
+},
+{
+q: "In higher plants, sexual reproduction occurs in:",
+opts: [
+  "Flowers",
+  "Leaves",
+  "Roots",
+  "Stem"
+], correct: 0,
+exp: "Sexual organs are found in flowers of higher plants."
+},
+{
+q: "What is a clone?",
+opts: [
+  "Group of genetically identical individuals",
+  "Group of genetically different individuals",
+  "Product of fertilization",
+  "Product of conjugation"
+], correct: 0,
+exp: "Clone = genetically identical individuals (asexual reproduction)."
+},
+{
+q: "Reproduction involving only one parent and no gamete formation is called:",
+opts: [
+  "Asexual reproduction",
+  "Sexual reproduction",
+  "Parthenogenesis",
+  "All of these"
+], correct: 0,
+exp: "Asexual reproduction does not involve gametes."
+},
+{
+q: "In which of these is vegetative propagation by leaves observed?",
+opts: [
+  "Bryophyllum",
+  "Potato",
+  "Sugarcane",
+  "Moss"
+], correct: 0,
+exp: "Bryophyllum forms buds on leaf margins."
+},
+{
+q: "Which one is NOT a type of sexual reproduction?",
+opts: [
+  "Syngamy",
+  "Conjugation",
+  "Parthenogenesis",
+  "Budding"
+], correct: 3,
+exp: "Budding is an asexual mode of reproduction."
+},
+{
+q: "Unicellular algae reproduce mainly by:",
+opts: [
+  "Cell division",
+  "Sporulation",
+  "Budding",
+  "Vegetative propagation"
+], correct: 0,
+exp: "Unicellular algae divide mitotically for reproduction."
+},
+{
+q: "The main feature of sexual reproduction is:",
+opts: [
+  "Genetic variation in offspring",
+  "No variation",
+  "Rapid multiplication",
+  "No fertilization"
+], correct: 0,
+exp: "Sexual reproduction promotes genetic variability."
+},
+{
+q: "Which of these is an annual plant?",
+opts: [
+  "Wheat",
+  "Banana",
+  "Mango",
+  "Bamboo"
+], correct: 0,
+exp: "Wheat completes its life cycle in one season (annual)."
+},
+{
+q: "Organisms that breed only once in their lifetime are called:",
+opts: [
+  "Semelparous",
+  "Iteroparous",
+  "Viviparous",
+  "Oviparous"
+], correct: 0,
+exp: "Semelparous: reproduce once, e.g., Pacific salmon, bamboo."
+},
+{
+q: "Which of the following shows external fertilization?",
+opts: [
+  "Frog",
+  "Dog",
+  "Bird",
+  "Cat"
+], correct: 0,
+exp: "Frog releases gametes into water (external fertilization)."
+},
+{
+q: "Which process results in offspring genetically different from parents?",
+opts: [
+  "Sexual reproduction",
+  "Binary fission",
+  "Budding",
+  "Fragmentation"
+], correct: 0,
+exp: "Sexual reproduction causes variation."
+},
+{
+q: "Which is the reproductive unit in yeast?",
+opts: [
+  "Bud",
+  "Sporangium",
+  "Zoospore",
+  "Gemma"
+], correct: 0,
+exp: "Yeast reproduces by budding."
+},
+{
+q: "Which one of the following is a viviparous animal?",
+opts: [
+  "Cow",
+  "Hen",
+  "Crocodile",
+  "Frog"
+], correct: 0,
+exp: "Cow gives birth to young ones (viviparous)."
+},
+{
+q: "Parthenogenesis is commonly found in:",
+opts: [
+  "Honey bees",
+  "Rats",
+  "Peacock",
+  "Frogs"
+], correct: 0,
+exp: "Drones (male bees) develop from unfertilized eggs by parthenogenesis."
+},
+{
+q: "Which among the following has the shortest lifespan?",
+opts: [
+  "Mayfly",
+  "Tortoise",
+  "Elephant",
+  "Human"
+], correct: 0,
+exp: "Mayflies have a lifespan of 1-2 days."
+},
+{
+q: "The reproductive phase in plants is indicated by:",
+opts: [
+  "Flowering",
+  "Leaf fall",
+  "Seed dormancy",
+  "Fruiting"
+], correct: 0,
+exp: "Onset of flowering marks reproductive phase in plants."
+},
+{
+q: "Which phase of life comes just before death in multicellular organisms?",
+opts: [
+  "Senescent phase",
+  "Juvenile phase",
+  "Reproductive phase",
+  "Embryonic phase"
+], correct: 0,
+exp: "Senescence is the phase of aging before death."
+},
+{
+q: "Which is a unisexual flower?",
+opts: [
+  "Papaya",
+  "Mustard",
+  "Pea",
+  "China rose"
+], correct: 0,
+exp: "Papaya produces separate male and female flowers (unisexual)."
+},
+{
+q: "In plants, vegetative propagation by offset occurs in:",
+opts: [
+  "Pistia",
+  "Onion",
+  "Ginger",
+  "Bryophyllum"
+], correct: 0,
+exp: "Pistia (water lettuce) reproduces via offset."
+},
+{
+q: "Which of the following is a perennating organ?",
+opts: [
+  "Rhizome",
+  "Fruit",
+  "Seed",
+  "Pollen grain"
+], correct: 0,
+exp: "Rhizome is a perennating vegetative organ."
+},
+{
+q: "In animals, the period between birth and sexual maturity is:",
+opts: [
+  "Juvenile phase",
+  "Senescent phase",
+  "Reproductive phase",
+  "Embryonic phase"
+], correct: 0,
+exp: "Juvenile phase is pre-reproductive."
+},
+{
+q: "Which plant propagates naturally through bulbils?",
+opts: [
+  "Agave",
+  "Mango",
+  "Rice",
+  "Onion"
+], correct: 0,
+exp: "Agave produces bulbils for vegetative propagation."
+},
+{
+q: "Which of the following shows iteroparity?",
+opts: [
+  "Rabbit",
+  "Bamboo",
+  "Salmon fish",
+  "Mayfly"
+], correct: 0,
+exp: "Rabbit breeds many times in its life (iteroparous)."
+},
+{
+q: "Which is a characteristic feature of sexual reproduction?",
+opts: [
+  "Fusion of gametes",
+  "One parent only",
+  "No genetic variation",
+  "Rapid multiplication"
+], correct: 0,
+exp: "Sexual reproduction involves gamete fusion."
+},
+{
+q: "An example of an annual plant is:",
+opts: [
+  "Mustard",
+  "Mango",
+  "Coconut",
+  "Banana"
+], correct: 0,
+exp: "Mustard completes its life cycle in one season."
+},
+{
+q: "Which of these plants propagates via corm?",
+opts: [
+  "Gladiolus",
+  "Potato",
+  "Bryophyllum",
+  "Jasmine"
+], correct: 0,
+exp: "Gladiolus propagates vegetatively by corm."
+},
+{
+q: "The transfer of pollen grains from anther to stigma is called:",
+opts: [
+  "Pollination",
+  "Fertilization",
+  "Syngamy",
+  "Parthenogenesis"
+], correct: 0,
+exp: "Pollination is transfer of pollen."
+},
+{
+q: "Which is NOT true for asexual reproduction?",
+opts: [
+  "Involves only one parent",
+  "Produces variation",
+  "Rapid multiplication",
+  "No fusion of gametes"
+], correct: 1,
+exp: "Asexual reproduction does not produce genetic variation."
+},
+{
+q: "Which animal is oviparous?",
+opts: [
+  "Hen",
+  "Dog",
+  "Cow",
+  "Cat"
+], correct: 0,
+exp: "Hen lays eggs (oviparous animal)."
+},
+{
+q: "Which of these statements about meiosis is correct?",
+opts: [
+  "Meiosis results in haploid gametes",
+  "Meiosis produces diploid gametes",
+  "Meiosis does not occur in sexual reproduction",
+  "Meiosis produces genetically identical cells"
+], correct: 0,
+exp: "Meiosis creates haploid gametes, ensuring chromosome number is maintained."
+},
+{
+q: "Organisms reproducing only once in their lifetime are called:",
+opts: [
+  "Semelparous",
+  "Iteroparous",
+  "Viviparous",
+  "Oviparous"
+], correct: 0,
+exp: "Semelparous organisms breed once, e.g., bamboo."
+},
+{
+q: "Which plant propagates by suckers?",
+opts: [
+  "Banana",
+  "Mango",
+  "Paddy",
+  "Pea"
+], correct: 0,
+exp: "Banana propagates vegetatively by suckers."
+},
+{
+q: "In plants, vegetative propagation by rhizome is seen in:",
+opts: [
+  "Ginger",
+  "Potato",
+  "Onion",
+  "Bryophyllum"
+], correct: 0,
+exp: "Ginger has underground stem called rhizome."
+},
+{
+q: "Which is an example of parthenogenesis?",
+opts: [
+  "Development of drones in honey bees",
+  "Cloning in bacteria",
+  "Budding in Hydra",
+  "Conjugation in Paramecium"
+], correct: 0,
+exp: "Male honey bees (drones) develop from unfertilized eggs."
+},
+{
+q: "An example of vegetative propagation by leaf is:",
+opts: [
+  "Bryophyllum",
+  "Onion",
+  "Potato",
+  "Ginger"
+], correct: 0,
+exp: "Bryophyllum develops plantlets on leaf margins."
+},
+{
+q: "Which of these is a biennial plant?",
+opts: [
+  "Carrot",
+  "Wheat",
+  "Rice",
+  "Mango"
+], correct: 0,
+exp: "Carrot completes its life cycle in two years (biennial)."
+},
+{
+q: "A flower which contains both androecium and gynoecium is called:",
+opts: [
+  "Bisexual",
+  "Unisexual",
+  "Dioecious",
+  "Monoecious"
+], correct: 0,
+exp: "Bisexual flowers have both male and female reproductive organs."
+},
+{
+q: "Which of these shows both internal and external fertilization?",
+opts: [
+  "Fishes",
+  "Amphibians",
+  "Reptiles",
+  "Birds"
+], correct: 0,
+exp: "Some fish species show internal; many show external fertilization."
+},
+{
+q: "In which of the following does the zygote develop outside the body?",
+opts: [
+  "Oviparous animals",
+  "Viviparous animals",
+  "Marsupials",
+  "Mammals"
+], correct: 0,
+exp: "Oviparous animals lay eggs, and development occurs outside."
+},
+{
+q: "Which is a natural method of vegetative propagation?",
+opts: [
+  "Runner",
+  "Grafting",
+  "Cutting",
+  "Layering"
+], correct: 0,
+exp: "Runner is a natural method (e.g., grass, strawberry)."
+},
+{
+q: "Which is NOT a feature of sexual reproduction?",
+opts: [
+  "Fusion of gametes",
+  "Variation in offspring",
+  "Slower multiplication",
+  "Genetic uniformity"
+], correct: 3,
+exp: "Sexual reproduction produces variability, not uniformity."
+},
+{
+q: "The reproductive phase in animals is also called:",
+opts: [
+  "Maturity",
+  "Senescence",
+  "Juvenile phase",
+  "Growth phase"
+], correct: 0,
+exp: "Maturity marks the beginning of reproductive phase."
+},
+{
+q: "Which animal shows budding as a mode of reproduction?",
+opts: [
+  "Hydra",
+  "Planaria",
+  "Amoeba",
+  "Paramecium"
+], correct: 0,
+exp: "Hydra reproduces by budding."
+},
+{
+q: "What is meant by the term 'senescence'?",
+opts: [
+  "Phase of rapid growth",
+  "Phase of reproductive maturity",
+  "Phase of aging and decline",
+  "Phase of zygote formation"
+], correct: 2,
+exp: "Senescence is the period of aging leading to natural death."
+},
+{
+q: "Which of these is an artificial method of vegetative propagation?",
+opts: [
+  "Cutting",
+  "Fragmentation",
+  "Runner",
+  "Bulbil"
+], correct: 0,
+exp: "Cutting is an artificial method used in horticulture."
+},
+{
+q: "Identify the organism that can reproduce by both sexual and asexual means:",
+opts: [
+  "Hydra",
+  "Amoeba",
+  "Bacteria",
+  "Virus"
+], correct: 0,
+exp: "Hydra can reproduce both by budding (asexual) and sexually."
+},
+{
+q: "Which of the following is NOT involved in sexual reproduction?",
+opts: [
+  "Meiosis",
+  "Syngamy",
+  "Gamete formation",
+  "Mitotic cell division"
+], correct: 3,
+exp: "Mitotic cell division is not unique to sexual reproduction."
+},
+{
+q: "In sexual reproduction, gametes are usually:",
+opts: [
+  "Haploid",
+  "Diploid",
+  "Triploid",
+  "Tetraploid"
+], correct: 0,
+exp: "Gametes are usually haploid to maintain chromosome number."
+},
+{
+q: "The female reproductive organ in flowering plants is called:",
+opts: [
+  "Gynoecium",
+  "Androecium",
+  "Calyx",
+  "Corolla"
+], correct: 0,
+exp: "Gynoecium is the collective term for the female organs."
+},
+{
+q: "Which is true about the lifespan of organisms?",
+opts: [
+  "It is fixed for each species",
+  "All individuals of a species live equally long",
+  "It varies within species",
+  "Lifespan is not affected by environment"
+], correct: 2,
+exp: "Lifespan varies due to genetics and environmental factors."
+},
+{
+q: "Organisms reproducing several times during their life cycle are called:",
+opts: [
+  "Iteroparous",
+  "Semelparous",
+  "Viviparous",
+  "Oviparous"
+], correct: 0,
+exp: "Iteroparous: reproduce many times in their lives."
+},
+{
+q: "Which one of the following produces gemmae for asexual reproduction?",
+opts: [
+  "Marchantia",
+  "Hydra",
+  "Moss",
+  "Amoeba"
+], correct: 0,
+exp: "Marchantia produces gemmae, a vegetative propagule."
+},
+{
+q: "The main difference between sexual and asexual reproduction is:",
+opts: [
+  "Number of parents",
+  "Genetic variation in offspring",
+  "Rate of reproduction",
+  "Both A and B"
+], correct: 3,
+exp: "Sexual: two parents & variation; asexual: one parent & no variation."
+},
+{
+q: "A structure specialized for dispersal in asexual reproduction is:",
+opts: [
+  "Spore",
+  "Root",
+  "Leaf",
+  "Seed"
+], correct: 0,
+exp: "Spores are adapted for dispersal in asexual reproduction."
+},
+{
+q: "Which of these organisms does NOT show alternation of generations?",
+opts: [
+  "Amoeba",
+  "Moss",
+  "Fern",
+  "Pine"
+], correct: 0,
+exp: "Amoeba reproduces by fission, not alternation of generations."
+},
+{
+q: "Which of the following is monoecious?",
+opts: [
+  "Maize",
+  "Papaya",
+  "Date palm",
+  "Coconut"
+], correct: 3,
+exp: "Coconut and maize are monoecious (male & female flowers on same plant)."
+},
+{
+q: "The event which restores diploid number during sexual reproduction is:",
+opts: [
+  "Fertilization",
+  "Meiosis",
+  "Mitosis",
+  "Gametogenesis"
+], correct: 0,
+exp: "Fertilization restores the diploid number."
+},
+{
+q: "Which statement about budding in yeast is TRUE?",
+opts: [
+  "The daughter cell remains attached to the parent cell initially",
+  "It is a type of sexual reproduction",
+  "Buds are always larger than parent cell",
+  "Budding does not require nutrients"
+], correct: 0,
+exp: "The bud (daughter) remains attached initially, then separates."
+},
+{
+q: "Which one is NOT matched correctly?",
+opts: [
+  "Budding — Hydra",
+  "Binary fission — Paramecium",
+  "Sporulation — Yeast",
+  "Fragmentation — Spirogyra"
+], correct: 2,
+exp: "Yeast mainly reproduces by budding, not sporulation."
+},
+{
+q: "Which is a vegetative propagule in Bryophyllum?",
+opts: [
+  "Leaf bud",
+  "Stem tuber",
+  "Bulbil",
+  "Corm"
+], correct: 0,
+exp: "Bryophyllum has vegetative buds on leaf margins."
+},
+{
+q: "Which animal can fertilize its own eggs (self-fertilization)?",
+opts: [
+  "Earthworm",
+  "Leech",
+  "Tapeworm",
+  "Frog"
+], correct: 2,
+exp: "Tapeworm is hermaphrodite and can self-fertilize."
+},
+{
+q: "Which of these is an oviparous mammal?",
+opts: [
+  "Platypus",
+  "Human",
+  "Dog",
+  "Whale"
+], correct: 0,
+exp: "Platypus is a monotreme, a mammal that lays eggs."
+},
+{
+q: "In plants, the phase between two flowering cycles is called:",
+opts: [
+  "Vegetative phase",
+  "Juvenile phase",
+  "Senescence",
+  "Dormancy"
+], correct: 0,
+exp: "The phase between flowering cycles is the vegetative phase."
+},
+{
+q: "Which is NOT a vegetative propagation structure?",
+opts: [
+  "Seed",
+  "Rhizome",
+  "Bulb",
+  "Tuber"
+], correct: 0,
+exp: "Seeds are produced sexually, not vegetatively."
+},
+{
+q: "Parthenocarpy refers to:",
+opts: [
+  "Development of fruit without fertilization",
+  "Development of embryo without fertilization",
+  "Development of seedless plants by cutting",
+  "Fusion of two gametes"
+], correct: 0,
+exp: "Parthenocarpy is fruit development without fertilization."
+},
+{
+q: "Which plant organ is specialized for vegetative propagation in onion?",
+opts: [
+  "Bulb",
+  "Corm",
+  "Tuber",
+  "Rhizome"
+], correct: 0,
+exp: "Onion propagates by bulb."
+},
+{
+q: "Which organism produces offspring genetically identical to itself?",
+opts: [
+  "Amoeba",
+  "Frog",
+  "Human",
+  "Pea"
+], correct: 0,
+exp: "Amoeba divides by mitosis, producing identical clones."
+},
+{
+q: "Which phase comes immediately after juvenile phase?",
+opts: [
+  "Reproductive phase",
+  "Senescent phase",
+  "Embryonic phase",
+  "Dormant phase"
+], correct: 0,
+exp: "Juvenile phase is followed by reproductive phase."
+},
+{
+q: "Which of these is true for viviparous animals?",
+opts: [
+  "Young ones develop inside the mother’s body",
+  "Eggs are laid outside",
+  "Offspring develop outside mother’s body",
+  "None of the above"
+], correct: 0,
+exp: "Viviparous animals give birth to live young ones."
+},
+{
+q: "Identify the plant which is an annual:",
+opts: [
+  "Rice",
+  "Bamboo",
+  "Mango",
+  "Banana"
+], correct: 0,
+exp: "Rice is an annual crop."
+},
+{
+q: "Which of the following is a perennating organ in potato?",
+opts: [
+  "Tuber",
+  "Rhizome",
+  "Bulb",
+  "Corm"
+], correct: 0,
+exp: "Potato tuber is a perennating vegetative organ."
+},
+{
+q: "Which event occurs only in sexual reproduction?",
+opts: [
+  "Gamete fusion",
+  "Mitosis",
+  "Spore formation",
+  "Budding"
+], correct: 0,
+exp: "Gamete fusion (syngamy) is unique to sexual reproduction."
+},
+{
+q: "Why is genetic variation important in sexual reproduction?",
+opts: [
+  "Promotes adaptability",
+  "Slows down evolution",
+  "Prevents disease",
+  "Prevents mutation"
+], correct: 0,
+exp: "Variation is the raw material for evolution and adaptability."
+},
+{
+q: "Which among the following is an iteroparous plant?",
+opts: [
+  "Mango",
+  "Bamboo",
+  "Rice",
+  "Wheat"
+], correct: 0,
+exp: "Mango bears flowers and fruits multiple times."
+},
+{
+q: "Which animal is a seasonal breeder?",
+opts: [
+  "Deer",
+  "Human",
+  "Dog",
+  "Rabbit"
+], correct: 0,
+exp: "Deer breeds only in a particular season."
+},
+{
+q: "Which of these does NOT occur in asexual reproduction?",
+opts: [
+  "Gamete fusion",
+  "No fertilization",
+  "One parent only",
+  "Rapid multiplication"
+], correct: 0,
+exp: "No gamete fusion in asexual reproduction."
+},
+{
+q: "Which plant propagates by stem cutting?",
+opts: [
+  "Rose",
+  "Potato",
+  "Ginger",
+  "Onion"
+], correct: 0,
+exp: "Rose is propagated by stem cuttings."
+},
+{
+q: "Which of these can reproduce by fragmentation?",
+opts: [
+  "Spirogyra",
+  "Yeast",
+  "Earthworm",
+  "Frog"
+], correct: 0,
+exp: "Spirogyra reproduces by breaking into fragments."
+},
+{
+q: "In which organism is vegetative propagation by root observed?",
+opts: [
+  "Dahlia",
+  "Mango",
+  "Rice",
+  "Banana"
+], correct: 0,
+exp: "Dahlia can propagate vegetatively by root."
+},
+{
+q: "What is the role of gemmae cups?",
+opts: [
+  "Asexual reproduction in liverworts",
+  "Sexual reproduction in ferns",
+  "Flowering in algae",
+  "Seed production in gymnosperms"
+], correct: 0,
+exp: "Gemmae cups help in asexual reproduction of liverworts."
+},
+{
+q: "Which phase of plant life cycle is marked by production of flowers?",
+opts: [
+  "Reproductive phase",
+  "Juvenile phase",
+  "Senescence",
+  "Vegetative phase"
+], correct: 0,
+exp: "Flowering marks the start of reproductive phase."
+},
+{
+q: "In which type of fertilization does the embryo develop inside the female body?",
+opts: [
+  "Internal fertilization",
+  "External fertilization",
+  "Self-fertilization",
+  "Double fertilization"
+], correct: 0,
+exp: "In internal fertilization, embryo develops inside the body."
+}
+
+];
+
+// Shuffle/restore logic and core test engine
+let shuffled = [];
+let timerInt = null;
+let remaining = TOTAL_TIME;
+let testStarted = false;
+let startTimestamp = null;
+let usedTime = 0;
+
+function shuffleArray(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    let j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function renderQuiz(shufOrder, selAnswers = {}) {
+  let form = document.getElementById('quizForm');
+  form.innerHTML = '';
+  for (let idx = 0; idx < shufOrder.length; idx++) {
+    const qObj = questionsData[shufOrder[idx]];
+    const qNum = idx + 1;
+    let qDiv = document.createElement('div');
+    qDiv.className = "question";
+    qDiv.innerHTML = `<p><strong>Q${qNum}.</strong> ${qObj.q}</p>`;
+    let optDiv = document.createElement('div');
+    optDiv.className = "options";
+    for (let opt = 0; opt < qObj.opts.length; opt++) {
+      let id = `q${qNum}o${opt}`;
+      let checked = (selAnswers[`q${qNum}`] === String.fromCharCode(65 + opt)) ? 'checked' : '';
+      optDiv.innerHTML += `<label><input type="radio" name="q${qNum}" value="${String.fromCharCode(65 + opt)}" id="${id}" ${checked}> ${qObj.opts[opt]}</label><br>`;
+    }
+    qDiv.appendChild(optDiv);
+    let expDiv = document.createElement('div');
+    expDiv.className = "explanation";
+    expDiv.id = `exp${qNum}`;
+    expDiv.style.display = 'none';
+    expDiv.textContent = qObj.exp;
+    qDiv.appendChild(expDiv);
+    form.appendChild(qDiv);
+  }
+
+  // Save answers on every change (refresh-resume logic)
+  setTimeout(() => {
+    document.querySelectorAll('input[type=radio]').forEach(radio => {
+      radio.addEventListener('change', function() {
+        let sel = {};
+        for(let i=1; i<=shufOrder.length; i++) {
+          let options = document.getElementsByName("q"+i);
+          for(let op of options) if(op.checked) sel['q'+i]=op.value;
+        }
+        localStorage.setItem(SEL_KEY, JSON.stringify(sel));
+      });
+    });
+  }, 100);
+}
+
+function formatTime(sec) {
+  let m = Math.floor(sec/60), s = sec%60;
+  return `${m}m ${s<10?'0'+s:s}s`;
+}
+
+function updateTimer() {
+  let timerElem = document.getElementById('timer');
+  if (remaining > 0) {
+    timerElem.innerHTML = "Time Left: " + formatTime(remaining);
+    remaining--;
+    localStorage.setItem(TIMELEFT_KEY, remaining);
+  } else {
+    timerElem.innerHTML = "Time Left: 0m 00s";
+    stopTimer();
+    autoSubmit();
+  }
+}
+
+function startTimer() {
+  testStarted = true;
+  startTimestamp = Date.now();
+  if (timerInt) clearInterval(timerInt);
+  document.getElementById('timer').innerHTML = "Time Left: " + formatTime(remaining);
+  timerInt = setInterval(updateTimer, 1000);
+}
+
+function stopTimer() {
+  if(timerInt) clearInterval(timerInt);
+  if (testStarted && startTimestamp) {
+    usedTime = Math.max(TOTAL_TIME - remaining, 0);
+  }
+}
+
+window.onload = function() {
+  let locked = localStorage.getItem(LOCK_KEY);
+  let shuffleSaved = localStorage.getItem(SHUFFLE_KEY);
+  let selSaved = localStorage.getItem(SEL_KEY);
+  let tleft = parseInt(localStorage.getItem(TIMELEFT_KEY));
+  if (locked === 'yes' && shuffleSaved) {
+    shuffled = JSON.parse(shuffleSaved);
+    let sel = JSON.parse(selSaved || '{}');
+    renderQuiz(shuffled, sel);
+    markQuiz(sel, true);
+    document.getElementById('timer').innerHTML = "Total Time: " + formatTime(TOTAL_TIME);
+    document.getElementById("lockedMsg").style.display = "";
+    document.getElementById("saveBtn").style.display = "";
+    document.getElementById("submitBtn").disabled = true;
+    document.getElementById("quizForm").classList.add("disabled");
+    for (let i = 1; i <= shuffled.length; i++) document.getElementById("exp"+i).style.display="block";
+    let radios = document.querySelectorAll('input[type=radio]');
+    radios.forEach(r => r.disabled = true);
+    // Restore the score/result box
+    let scoreHtml = localStorage.getItem(SCORE_KEY) || '';
+    let prevResult = document.querySelector('.result');
+    if (prevResult) prevResult.remove();
+    if (scoreHtml) {
+      document.getElementById("quizForm").insertAdjacentHTML("afterend", scoreHtml);
+    }
+  }
+  else if (shuffleSaved && selSaved && tleft > 0) {
+    shuffled = JSON.parse(shuffleSaved);
+    let sel = JSON.parse(selSaved || '{}');
+    renderQuiz(shuffled, sel);
+    remaining = tleft;
+    startTimer();
+  } else {
+    shuffled = Array.from(Array(questionsData.length).keys());
+    shuffleArray(shuffled);
+    renderQuiz(shuffled);
+    localStorage.setItem(SHUFFLE_KEY, JSON.stringify(shuffled));
+    remaining = TOTAL_TIME;
+    localStorage.setItem(TIMELEFT_KEY, remaining);
+    startTimer();
+  }
+};
+
+function autoSubmit() {
+  if(localStorage.getItem(LOCK_KEY)==='yes') return;
+  alert("Time is up! The test will be auto-submitted.");
+  submitQuiz();
+}
+
+function submitQuiz() {
+  if(localStorage.getItem(LOCK_KEY)==='yes') return;
+  let sel = {};
+  let total = shuffled.length, score = 0;
+  for(let i=1; i<=total; i++) {
+    let options = document.getElementsByName("q"+i);
+    for(let op of options) {
+      if(op.checked) sel['q'+i]=op.value;
+    }
+  }
+  score = markQuiz(sel, false);
+  for(let i=1; i<=total; i++) document.getElementById("exp"+i).style.display="block";
+  stopTimer();
+  let timeUsed = TOTAL_TIME - remaining;
+  if(timeUsed <= 0 || isNaN(timeUsed)) timeUsed = TOTAL_TIME;
+  let percent = ((score/total)*100).toFixed(2);
+  let resultText = `<div class="result"><div>Test submitted!</div><br><span style="font-size: 2em; color: #326c33;"><b>Score: ${score} / ${total} (${percent}%)</b></span><br><span id="timeStr">Time: ${formatTime(timeUsed)}</span></div>`;
+  let resultDiv = document.getElementById("result");
+  if (resultDiv) resultDiv.outerHTML = resultText;
+  else document.getElementById("quizForm").insertAdjacentHTML("afterend", resultText);
+  document.getElementById("usedTime").innerHTML = ``;
+  document.getElementById("usedTime").style.display = "none";
+  document.getElementById("submitBtn").disabled = true;
+  document.getElementById("quizForm").classList.add("disabled");
+  document.getElementById("saveBtn").style.display="";
+  document.getElementById("lockedMsg").style.display="";
+  let radios = document.querySelectorAll('input[type=radio]');
+  radios.forEach(r => r.disabled = true);
+  localStorage.setItem(LOCK_KEY, 'yes');
+  localStorage.setItem(SEL_KEY, JSON.stringify(sel));
+  localStorage.setItem(SCORE_KEY, resultText);
+  localStorage.setItem(TIME_KEY, timeUsed);
+  localStorage.setItem(SHUFFLE_KEY, JSON.stringify(shuffled));
+  localStorage.removeItem(TIMELEFT_KEY);
+}
+
+function markQuiz(sel, reviewMode) {
+  let score = 0, total = shuffled.length;
+  for(let i=1; i<=total; i++) {
+    let user = sel['q'+i];
+    let radios = document.getElementsByName("q"+i);
+    for(let op of radios) {
+      op.parentElement.classList.remove('correct','incorrect');
+      let oldMark = op.parentElement.querySelector('.unattended');
+      if (oldMark) oldMark.remove();
+    }
+    let qIdx = shuffled[i-1];
+    let correctIdx = questionsData[qIdx].correct;
+    let correctLetter = String.fromCharCode(65 + correctIdx);
+
+    if(user) {
+      for(let op of radios) {
+        if(op.value===user) {
+          if(op.value===correctLetter) {
+            score++;
+            op.parentElement.classList.add('correct');
+          } else {
+            op.parentElement.classList.add('incorrect');
+          }
+        }
+      }
+    } else {
+      let parent = radios[radios.length-1]?.parentElement?.parentElement;
+      if (parent && !parent.querySelector('.unattended')) {
+        let label = document.createElement("span");
+        label.className = "unattended";
+        label.innerText = "Un Attended";
+        parent.appendChild(label);
+      }
+    }
+    for(let op of radios) {
+      if(op.value===correctLetter) op.parentElement.classList.add('correct');
+    }
+    document.getElementById("exp"+i).style.display="block";
+  }
+  return score;
+}
+
+function saveReview() {
+  let clone = document.documentElement.cloneNode(true);
+  let scripts = clone.querySelectorAll('script');
+  scripts.forEach(s => s.remove());
+  let submitBtn = clone.querySelector('.submit-btn');
+  if (submitBtn) submitBtn.remove();
+  let saveBtn = clone.querySelector('.save-btn');
+  if (saveBtn) saveBtn.remove();
+  let timerElem = clone.querySelector('#timer');
+  if (timerElem) timerElem.remove();
+  let lockedMsg = clone.querySelector('#lockedMsg');
+  if (lockedMsg) lockedMsg.style.display = "";
+  let quizForm = clone.querySelector('#quizForm');
+  if (quizForm) quizForm.classList.add('disabled');
+  let radios = clone.querySelectorAll('input[type=radio]');
+  radios.forEach(r => {
+    r.disabled = true;
+    r.setAttribute('disabled', 'disabled');
+  });
+  let html = "<!DOCTYPE html>\n" + clone.outerHTML.replace(/<title>(.*?)<\/title>/, '<title>$1 (Review Only)</title>');
+  let blob = new Blob([html], {type:"text/html"});
+  let a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "Combine_Units_138Q_Review.html";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+</script>
+</body>
+</html>
