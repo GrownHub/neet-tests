@@ -1,0 +1,1101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>GWPL NEET Preparations – "Solutions" (78Q)</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f9f9f9; margin: 20px; color:#222; }
+    .question { margin-bottom: 20px; padding: 15px; background: #fff; border-radius: 8px; box-shadow: 0 0 5px rgba(0,0,0,0.08); }
+    .options { margin-left: 20px; }
+    .correct { background-color: #d4edda !important; }
+    .incorrect { background-color: #f8d7da !important; }
+    .explanation { font-style: italic; margin-top: 6px; color: #555; display:none; }
+    .submit-btn, .save-btn { margin: 28px 0 12px 0; padding: 12px 28px; font-size: 16px; border-radius: 8px; border: none; cursor: pointer; }
+    .submit-btn { background: #31b54c; color: #fff; }
+    .submit-btn[disabled] { background: #b7dbbe; color: #fff; cursor: not-allowed; }
+    .save-btn { background: #005ba3; color: #fff; }
+    .result {
+      margin-top: 32px;
+      font-size: 22px;
+      font-weight: bold;
+      background: #ecfaec;
+      color: #326c33;
+      padding: 32px 0 22px 0;
+      border-radius: 10px;
+      text-align:center;
+      border:1px solid #c7ebc7;
+    }
+    .unattended {
+      color: #fff;
+      background: #e94444 !important;
+      font-weight: bold;
+      padding: 2px 8px;
+      border-radius: 6px;
+      margin-left: 14px;
+      font-size: 0.97em;
+      display: inline-block;
+    }
+    .locked-message { margin: 32px 0 8px 0; color: #bf0606; font-weight: bold; text-align: center; }
+    form.disabled { pointer-events: none; opacity: 0.98; }
+    #timer { font-size: 1.1em; font-weight: bold; color: #278c28; float: right; margin-top:-28px; margin-right:8px; }
+    #usedTime { color: #326c33; margin-top:12px; font-size:20px; text-align:center;}
+  </style>
+</head>
+<body>
+<h2>GWPL NEET Preparations</h2>
+<h3>Solutions (78 Questions)</h3>
+<span id="timer"></span>
+<form id="quizForm"></form>
+<div style="text-align:center;">
+  <button class="submit-btn" id="submitBtn" onclick="submitQuiz()" type="button">Submit</button>
+  <button class="save-btn" id="saveBtn" onclick="saveReview()" type="button">Save Review as HTML</button>
+</div>
+<div class="locked-message" id="lockedMsg" style="display:none;">This test has already been submitted.<br>Review mode only.</div>
+<div id="usedTime" style="display:none;"></div>
+
+<script>
+// CONFIGURATION
+const QUESTIONS_COUNT = 78;
+const TIME_PER_QUESTION = 72; // seconds per Physics, Chemistry, Biology question
+const TOTAL_TIME = QUESTIONS_COUNT * TIME_PER_QUESTION;
+
+// Unique storage keys for Physics
+const LOCK_KEY = 'phy_units_78q_locked';
+const SCORE_KEY = 'phy_units_78q_score';
+const TIME_KEY = 'phy_units_78q_time';
+const SEL_KEY = 'phy_units_78q_sel';
+const SHUFFLE_KEY = 'phy_units_78q_shuffle';
+const TIMELEFT_KEY = 'phy_units_78q_timeleft';
+
+// 78 NEET Questions Solutions
+const questionsData = [
+{
+q: "A solution in which no more solute can be dissolved at a given temperature is called:",
+opts: [
+  "Saturated solution",
+  "Unsaturated solution",
+  "Supersaturated solution",
+  "Dilute solution"
+], correct: 0,
+exp: "A saturated solution cannot dissolve more solute at that temperature."
+},
+{
+q: "Which of the following is not a colligative property?",
+opts: [
+  "Boiling point elevation",
+  "Depression in freezing point",
+  "Vapour pressure lowering",
+  "Refractive index"
+], correct: 3,
+exp: "Refractive index is not a colligative property; it depends on the nature of solute."
+},
+{
+q: "The concentration of a solution expressed as moles of solute per kilogram of solvent is called:",
+opts: [
+  "Molarity",
+  "Molality",
+  "Normality",
+  "Formality"
+], correct: 1,
+exp: "Molality (m) = moles of solute per kg of solvent."
+},
+{
+q: "A solution that obeys Raoult’s law over the entire range of concentration is called:",
+opts: [
+  "Ideal solution",
+  "Non-ideal solution",
+  "Saturated solution",
+  "Colloidal solution"
+], correct: 0,
+exp: "Ideal solutions obey Raoult’s law at all concentrations."
+},
+{
+q: "Which of the following pairs will form an ideal solution?",
+opts: [
+  "n-Hexane and n-Heptane",
+  "Acetone and Chloroform",
+  "Ethanol and Water",
+  "Hydrochloric acid and Water"
+], correct: 0,
+exp: "n-Hexane and n-Heptane are chemically similar and form an ideal solution."
+},
+{
+q: "The solubility of a gas in a liquid increases with:",
+opts: [
+  "Increase in pressure and decrease in temperature",
+  "Increase in pressure and temperature",
+  "Decrease in pressure and temperature",
+  "Decrease in pressure and increase in temperature"
+], correct: 0,
+exp: "High pressure and low temperature favour gas solubility in liquids."
+},
+{
+q: "According to Henry’s law, the solubility of a gas in a liquid is directly proportional to:",
+opts: [
+  "Pressure of the gas",
+  "Volume of the liquid",
+  "Temperature of the liquid",
+  "Molecular weight of gas"
+], correct: 0,
+exp: "S = kH × P; solubility increases with partial pressure."
+},
+{
+q: "A solution which shows positive deviation from Raoult’s law has:",
+opts: [
+  "A–B interactions weaker than A–A and B–B",
+  "A–B interactions stronger than A–A and B–B",
+  "No difference in interactions",
+  "Zero enthalpy change on mixing"
+], correct: 0,
+exp: "Weaker A–B interactions result in positive deviation (higher vapour pressure)."
+},
+{
+q: "The van’t Hoff factor (i) for NaCl in aqueous solution is approximately:",
+opts: [
+  "1",
+  "2",
+  "0.5",
+  "1.5"
+], correct: 1,
+exp: "NaCl dissociates into two ions: Na⁺ and Cl⁻, so i ≈ 2."
+},
+{
+q: "Which concentration unit is independent of temperature?",
+opts: [
+  "Molarity",
+  "Normality",
+  "Molality",
+  "Formality"
+], correct: 2,
+exp: "Molality depends on mass, not volume, and is temperature-independent."
+},
+{
+q: "What is the effect of adding a non-volatile solute to a solvent?",
+opts: [
+  "Elevation in boiling point",
+  "Depression in freezing point",
+  "Lowering of vapour pressure",
+  "All of the above"
+], correct: 3,
+exp: "All colligative properties are observed when a non-volatile solute is added."
+},
+{
+q: "Which solution will have the highest boiling point?",
+opts: [
+  "0.1 m NaCl",
+  "0.1 m glucose",
+  "0.1 m KNO₃",
+  "0.1 m urea"
+], correct: 0,
+exp: "NaCl dissociates into two ions (i > 1), giving higher boiling point elevation."
+},
+{
+q: "The molarity (M) of a solution is defined as:",
+opts: [
+  "Moles of solute per litre of solution",
+  "Moles of solute per kg of solvent",
+  "Grams of solute per litre of solvent",
+  "Moles of solute per 100 mL of solution"
+], correct: 0,
+exp: "M = moles solute / litre of solution."
+},
+{
+q: "What is an azeotrope?",
+opts: [
+  "A constant boiling mixture",
+  "A mixture with variable composition",
+  "A saturated solution",
+  "A supersaturated solution"
+], correct: 0,
+exp: "Azeotropes boil at a constant temperature and composition."
+},
+{
+q: "The freezing point depression is a:",
+opts: [
+  "Colligative property",
+  "Chemical property",
+  "Intensive property",
+  "Extensive property"
+], correct: 0,
+exp: "It depends on the number of solute particles."
+},
+{
+q: "Which one will show the maximum freezing point depression?",
+opts: [
+  "1 m NaCl",
+  "1 m glucose",
+  "1 m BaCl₂",
+  "1 m urea"
+], correct: 2,
+exp: "BaCl₂ gives 3 ions (Ba²⁺ and 2Cl⁻), so greatest effect."
+},
+{
+q: "Which of the following has the lowest vapour pressure at the same temperature?",
+opts: [
+  "Pure solvent",
+  "Solution with non-volatile solute",
+  "Solution with volatile solute",
+  "Saturated solution"
+], correct: 1,
+exp: "Adding a non-volatile solute always lowers vapour pressure."
+},
+{
+q: "The total number of components in a saturated solution of NaCl in water is:",
+opts: [
+  "1",
+  "2",
+  "3",
+  "4"
+], correct: 1,
+exp: "Components: NaCl and water."
+},
+{
+q: "The sum of mole fractions of all components in a solution is:",
+opts: [
+  "Zero",
+  "Infinity",
+  "One",
+  "Two"
+], correct: 2,
+exp: "Mole fractions add up to 1."
+},
+{
+q: "Which solution will have the lowest freezing point?",
+opts: [
+  "0.2 m NaCl",
+  "0.2 m glucose",
+  "0.2 m K₂SO₄",
+  "0.2 m ethanol"
+], correct: 2,
+exp: "K₂SO₄ gives 3 ions (2K⁺ and SO₄²⁻), so largest freezing point depression."
+},
+{
+q: "Which of the following statements about molality and molarity is correct?",
+opts: [
+  "Molarity changes with temperature; molality does not",
+  "Both are temperature dependent",
+  "Molality is volume-based",
+  "Molarity is mass-based"
+], correct: 0,
+exp: "Molarity (volume-based) varies with temperature; molality (mass-based) does not."
+},
+{
+q: "Raoult’s law is applicable to:",
+opts: [
+  "Ideal solutions only",
+  "Non-ideal solutions only",
+  "Colloidal solutions",
+  "All types of solutions"
+], correct: 0,
+exp: "Raoult’s law holds strictly for ideal solutions."
+},
+{
+q: "The SI unit of molality is:",
+opts: [
+  "mol/L",
+  "mol/kg",
+  "g/L",
+  "kg/mol"
+], correct: 1,
+exp: "Molality (m) is measured in moles per kilogram of solvent."
+},
+{
+q: "Henry’s law constant (kH) for a gas is higher when:",
+opts: [
+  "The gas is less soluble",
+  "The gas is more soluble",
+  "The pressure is low",
+  "The temperature is low"
+], correct: 0,
+exp: "High kH = low solubility."
+},
+{
+q: "Which term describes the amount of solute that can be dissolved in a specific amount of solvent at a certain temperature?",
+opts: [
+  "Solubility",
+  "Concentration",
+  "Saturation",
+  "Molarity"
+], correct: 0,
+exp: "Solubility is the maximum amount that can be dissolved."
+},
+{
+q: "A solution which contains less solute than its maximum capacity at a given temperature is called:",
+opts: [
+  "Unsaturated solution",
+  "Saturated solution",
+  "Supersaturated solution",
+  "Colloidal solution"
+], correct: 0,
+exp: "An unsaturated solution can dissolve more solute."
+},
+{
+q: "The colligative property used to determine the molar mass of proteins is:",
+opts: [
+  "Osmotic pressure",
+  "Elevation of boiling point",
+  "Depression of freezing point",
+  "Vapour pressure lowering"
+], correct: 0,
+exp: "Osmotic pressure is convenient for large molecules."
+},
+{
+q: "The osmotic pressure of a dilute solution depends on:",
+opts: [
+  "Number of solute particles",
+  "Nature of solute",
+  "Nature of solvent",
+  "Pressure applied"
+], correct: 0,
+exp: "Colligative properties depend only on the number of solute particles."
+},
+{
+q: "In reverse osmosis, solvent moves:",
+opts: [
+  "From lower to higher solute concentration",
+  "From higher to lower solute concentration",
+  "From solution to pure solvent",
+  "No net movement"
+], correct: 1,
+exp: "Solvent moves from concentrated to dilute region against the normal osmosis direction."
+},
+{
+q: "What is the mole fraction of water in 18 g of water mixed with 46 g of ethanol? (H₂O: 18 g/mol, C₂H₅OH: 46 g/mol)",
+opts: [
+  "0.5",
+  "0.67",
+  "0.33",
+  "0.25"
+], correct: 0,
+exp: "Moles: H₂O = 1, ethanol = 1; total = 2. Mole fraction of water = 1/2 = 0.5."
+},
+{
+q: "The boiling point elevation of 1 molal aqueous NaCl solution is nearly twice that of 1 molal glucose solution because:",
+opts: [
+  "NaCl produces two ions",
+  "Glucose does not dissociate",
+  "Both A and B",
+  "NaCl is volatile"
+], correct: 2,
+exp: "NaCl dissociates into two ions, doubling the effect."
+},
+{
+q: "A non-ideal solution showing negative deviation from Raoult’s law forms:",
+opts: [
+  "Minimum boiling azeotrope",
+  "Maximum boiling azeotrope",
+  "No azeotrope",
+  "No boiling point change"
+], correct: 1,
+exp: "Negative deviation causes maximum boiling azeotrope (e.g., HNO₃–H₂O)."
+},
+{
+q: "The solubility of NaCl increases with:",
+opts: [
+  "Increase in temperature",
+  "Decrease in temperature",
+  "Increase in pressure",
+  "Decrease in pressure"
+], correct: 0,
+exp: "Most salts are more soluble at higher temperatures."
+},
+{
+q: "Addition of salt to water causes the boiling point of water to:",
+opts: [
+  "Increase",
+  "Decrease",
+  "Remain constant",
+  "Fluctuate"
+], correct: 0,
+exp: "Non-volatile solute increases boiling point."
+},
+{
+q: "If a solute associates in solution, the van’t Hoff factor (i) is:",
+opts: [
+  "Greater than 1",
+  "Less than 1",
+  "Equal to 1",
+  "Zero"
+], correct: 1,
+exp: "Association reduces number of particles; i < 1."
+},
+{
+q: "Which of the following does NOT affect the vapour pressure of a solution?",
+opts: [
+  "Nature of solute",
+  "Nature of solvent",
+  "Atmospheric pressure",
+  "Temperature"
+], correct: 2,
+exp: "Vapour pressure depends on solution’s components and temperature, not outside pressure."
+},
+{
+q: "The van’t Hoff factor (i) for 0.1 M acetic acid solution is:",
+opts: [
+  "Close to 1",
+  "Close to 2",
+  "Zero",
+  "Greater than 2"
+], correct: 0,
+exp: "Acetic acid ionizes slightly; i ≈ 1."
+},
+{
+q: "Which concentration unit is suitable for expressing the concentration of blood plasma?",
+opts: [
+  "Osmolarity",
+  "Molarity",
+  "Molality",
+  "Formality"
+], correct: 0,
+exp: "Osmolarity considers total particles in blood plasma."
+},
+{
+q: "Osmotic pressure (π) is directly proportional to:",
+opts: [
+  "Molarity and temperature",
+  "Molality and temperature",
+  "Mole fraction and temperature",
+  "Density and temperature"
+], correct: 0,
+exp: "π = MRT (van’t Hoff’s law for dilute solutions)."
+},
+{
+q: "The freezing point of a solution containing 0.1 mol of urea in 1 kg of water is (Kf for water = 1.86 K kg mol⁻¹):",
+opts: [
+  "-0.186°C",
+  "-1.86°C",
+  "-0.93°C",
+  "+0.186°C"
+], correct: 0,
+exp: "ΔTf = Kf × m = 1.86 × 0.1 = 0.186°C; freezing point is lowered."
+},
+{
+q: "The elevation in boiling point of a 1 molal KCl solution is nearly equal to that of:",
+opts: [
+  "2 molal urea",
+  "1 molal NaCl",
+  "0.5 molal NaCl",
+  "1 molal glucose"
+], correct: 0,
+exp: "KCl (i ≈ 2) → 1 molal KCl ≈ 2 molal non-electrolyte."
+},
+{
+q: "Which of the following solutions is isotonic with 0.1 M NaCl solution?",
+opts: [
+  "0.1 M KCl",
+  "0.1 M glucose",
+  "0.2 M glucose",
+  "0.05 M CaCl₂"
+], correct: 0,
+exp: "0.1 M KCl gives same number of ions/particles as 0.1 M NaCl."
+},
+{
+q: "Which of the following expresses concentration as number of equivalents per litre?",
+opts: [
+  "Normality",
+  "Molarity",
+  "Molality",
+  "Mole fraction"
+], correct: 0,
+exp: "Normality (N) = equivalents/litre."
+},
+{
+q: "A 0.1 m solution of NaCl is:",
+opts: [
+  "More concentrated than a 0.1 m solution of glucose",
+  "Less concentrated than a 0.1 m solution of glucose",
+  "Equally concentrated as 0.1 m glucose solution",
+  "More dilute than 0.1 m glucose solution"
+], correct: 0,
+exp: "NaCl dissociates, doubling effective particle concentration."
+},
+{
+q: "When a solution is diluted, its:",
+opts: [
+  "Molarity decreases",
+  "Molarity increases",
+  "Molality increases",
+  "Molality remains constant"
+], correct: 0,
+exp: "Molarity (moles/volume) falls as volume increases."
+},
+{
+q: "The solution with the highest osmotic pressure is:",
+opts: [
+  "1 M NaCl",
+  "1 M glucose",
+  "1 M sucrose",
+  "1 M ethanol"
+], correct: 0,
+exp: "NaCl produces more particles (i > 1), increasing osmotic pressure."
+},
+{
+q: "If two solutions have the same osmotic pressure, they are:",
+opts: [
+  "Isotonic",
+  "Hypertonic",
+  "Hypotonic",
+  "None"
+], correct: 0,
+exp: "Isotonic solutions have equal osmotic pressure."
+},
+{
+q: "Which of the following does NOT form an azeotrope?",
+opts: [
+  "H₂O–C₂H₅OH",
+  "HNO₃–H₂O",
+  "C₂H₅OH–C₆H₆",
+  "C₆H₆–CCl₄"
+], correct: 3,
+exp: "Benzene–carbon tetrachloride forms an ideal solution, not an azeotrope."
+},
+{
+q: "The minimum boiling azeotrope is formed when:",
+opts: [
+  "Positive deviation from Raoult's law occurs",
+  "Negative deviation occurs",
+  "Ideal solution is formed",
+  "None"
+], correct: 0,
+exp: "Positive deviation produces minimum boiling azeotrope."
+},
+{
+q: "The solubility of a salt which decreases with increasing temperature is:",
+opts: [
+  "Exothermic dissolution",
+  "Endothermic dissolution",
+  "Isoenthalpic dissolution",
+  "Neutral dissolution"
+], correct: 0,
+exp: "Exothermic dissolution releases heat; solubility decreases as temperature increases."
+},
+{
+q: "What is the mole fraction of the solute in a solution containing 10 g NaOH (M=40) in 90 g water (M=18)?",
+opts: [
+  "0.05",
+  "0.10",
+  "0.20",
+  "0.25"
+], correct: 0,
+exp: "Moles NaOH = 0.25; H₂O = 5; total = 5.25. Mole fraction NaOH = 0.25/5.25 ≈ 0.05."
+},
+{
+q: "Which solution is the most dilute?",
+opts: [
+  "0.1 M",
+  "0.01 M",
+  "0.001 M",
+  "1 M"
+], correct: 2,
+exp: "0.001 M has the lowest concentration."
+},
+{
+q: "A solution showing negative deviation from Raoult’s law has:",
+opts: [
+  "Lower vapour pressure than expected",
+  "Higher vapour pressure than expected",
+  "No change in vapour pressure",
+  "Zero vapour pressure"
+], correct: 0,
+exp: "Negative deviation: stronger A–B attraction, less vapour."
+},
+{
+q: "The correct statement about non-ideal solutions is:",
+opts: [
+  "They show heat change on mixing",
+  "They always form azeotropes",
+  "They obey Raoult’s law",
+  "Their enthalpy of mixing is zero"
+], correct: 0,
+exp: "Non-ideal solutions show enthalpy change on mixing."
+},
+{
+q: "Which solution will have the highest depression in freezing point?",
+opts: [
+  "0.1 m BaCl₂",
+  "0.1 m glucose",
+  "0.1 m NaCl",
+  "0.1 m sucrose"
+], correct: 0,
+exp: "BaCl₂ gives 3 ions, so greatest effect."
+},
+{
+q: "On addition of a solute, the vapour pressure of the solution:",
+opts: [
+  "Decreases",
+  "Increases",
+  "Remains unchanged",
+  "Fluctuates"
+], correct: 0,
+exp: "Non-volatile solute lowers vapour pressure."
+},
+{
+q: "Which of the following statements is true for a solution with i < 1?",
+opts: [
+  "Solute associates in solution",
+  "Solute dissociates in solution",
+  "No association or dissociation",
+  "None of these"
+], correct: 0,
+exp: "i < 1 means association."
+},
+{
+q: "The vapour pressure of pure water at 25°C is 23.8 mmHg. What is its vapour pressure when 18 g glucose is dissolved in 180 g water? (Assume ideal behavior.)",
+opts: [
+  "21.6 mmHg",
+  "22.8 mmHg",
+  "23.8 mmHg",
+  "23.0 mmHg"
+], correct: 1,
+exp: "1 mole glucose + 10 moles water; relative lowering = 1/11."
+},
+{
+q: "The process used to separate salt from sea water is:",
+opts: [
+  "Evaporation",
+  "Distillation",
+  "Sublimation",
+  "Filtration"
+], correct: 0,
+exp: "Evaporation leaves salt behind."
+},
+{
+q: "Which property is NOT colligative?",
+opts: [
+  "Depression in freezing point",
+  "Elevation in boiling point",
+  "Vapour pressure lowering",
+  "Surface tension"
+], correct: 3,
+exp: "Surface tension is not a colligative property."
+},
+{
+q: "The maximum amount of a solute that can be dissolved in a solvent at a given temperature is called:",
+opts: [
+  "Solubility",
+  "Concentration",
+  "Saturation",
+  "Molarity"
+], correct: 0,
+exp: "This is the definition of solubility."
+},
+{
+q: "A non-volatile solute is added to a volatile solvent. Which is true?",
+opts: [
+  "Boiling point increases",
+  "Freezing point decreases",
+  "Vapour pressure decreases",
+  "All of the above"
+], correct: 3,
+exp: "All colligative properties are affected."
+},
+{
+q: "Which one does NOT influence the solubility of a solid in a liquid?",
+opts: [
+  "Nature of solute",
+  "Nature of solvent",
+  "Pressure",
+  "Temperature"
+], correct: 2,
+exp: "Pressure has little effect on solubility of solids in liquids."
+},
+{
+q: "Which of these has the lowest osmotic pressure at the same concentration?",
+opts: [
+  "Glucose",
+  "NaCl",
+  "K₂SO₄",
+  "BaCl₂"
+], correct: 0,
+exp: "Glucose is non-electrolyte, so gives least particles."
+},
+{
+q: "When two liquids are completely miscible in all proportions, they are called:",
+opts: [
+  "Miscible liquids",
+  "Immiscible liquids",
+  "Saturated liquids",
+  "Colloidal liquids"
+], correct: 0,
+exp: "Miscible means they mix in all proportions."
+},
+{
+q: "A solution of NaCl in water boils at:",
+opts: [
+  "Higher temperature than pure water",
+  "Lower temperature than pure water",
+  "Same temperature as pure water",
+  "Unchanged"
+], correct: 0,
+exp: "Non-volatile solute raises boiling point."
+},
+{
+q: "The presence of which solute will give the highest elevation of boiling point for the same molality?",
+opts: [
+  "K₂SO₄",
+  "Glucose",
+  "Urea",
+  "NaCl"
+], correct: 0,
+exp: "K₂SO₄ dissociates to 3 ions (i = 3)."
+},
+{
+q: "When a solution is hypertonic to another, it has:",
+opts: [
+  "Higher osmotic pressure",
+  "Lower osmotic pressure",
+  "Same osmotic pressure",
+  "No osmotic pressure"
+], correct: 0,
+exp: "Hypertonic = higher osmotic pressure."
+},
+{
+q: "A non-volatile solute is dissolved in a volatile solvent. The vapour pressure of the solution:",
+opts: [
+  "Is lower than that of pure solvent",
+  "Is higher than that of pure solvent",
+  "Remains the same",
+  "Is zero"
+], correct: 0,
+exp: "It is always lower."
+},
+{
+q: "Which of the following pairs will not form an ideal solution?",
+opts: [
+  "Benzene and Toluene",
+  "n-Hexane and n-Heptane",
+  "Acetone and Chloroform",
+  "Ethyl alcohol and Water"
+], correct: 2,
+exp: "Acetone and chloroform show strong interactions—non-ideal."
+},
+{
+q: "Raoult’s law relates to:",
+opts: [
+  "Vapour pressure of solution",
+  "Viscosity of solution",
+  "Surface tension",
+  "Freezing point"
+], correct: 0,
+exp: "Raoult's law deals with vapour pressure."
+},
+{
+q: "What will be the molality of a solution containing 9.8 g of H₂SO₄ in 1 kg of water? (M = 98)",
+opts: [
+  "0.1 m",
+  "0.01 m",
+  "1 m",
+  "0.001 m"
+], correct: 0,
+exp: "9.8g/98 = 0.1 mol; in 1 kg water, so 0.1 m."
+},
+{
+q: "In hypertonic solution, the cell will:",
+opts: [
+  "Shrink",
+  "Burst",
+  "Remain same",
+  "Divide"
+], correct: 0,
+exp: "Water leaves the cell, causing shrinkage."
+},
+{
+q: "Which law explains the relation between partial pressure and mole fraction?",
+opts: [
+  "Raoult’s law",
+  "Henry’s law",
+  "Dalton’s law",
+  "Boyle’s law"
+], correct: 0,
+exp: "Raoult’s law relates partial pressure to mole fraction."
+},
+{
+q: "If a solution freezes at -0.372°C, what is its molality? (Kf = 1.86 K kg mol⁻¹)",
+opts: [
+  "0.2 m",
+  "0.1 m",
+  "0.5 m",
+  "0.3 m"
+], correct: 0,
+exp: "ΔTf = 1.86 × m; m = 0.372/1.86 = 0.2."
+},
+{
+q: "Which of the following has the highest molarity?",
+opts: [
+  "1 mol in 1 L",
+  "2 mol in 2 L",
+  "0.5 mol in 0.25 L",
+  "1 mol in 2 L"
+], correct: 2,
+exp: "0.5/0.25 = 2 M, which is highest."
+},
+{
+q: "A mixture of two miscible liquids that boils at a constant temperature and composition is called:",
+opts: [
+  "Azeotrope",
+  "Colloid",
+  "Saturated solution",
+  "Isotonic mixture"
+], correct: 0,
+exp: "Azeotropes boil at constant temperature and composition."
+},
+{
+q: "The temperature at which vapour pressure of a liquid becomes equal to atmospheric pressure is:",
+opts: [
+  "Boiling point",
+  "Freezing point",
+  "Melting point",
+  "Sublimation point"
+], correct: 0,
+exp: "Boiling point is when vapour pressure = atmospheric pressure."
+}
+];
+
+// Shuffle/restore logic and core test engine
+let shuffled = [];
+let timerInt = null;
+let remaining = TOTAL_TIME;
+let testStarted = false;
+let startTimestamp = null;
+let usedTime = 0;
+
+function shuffleArray(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    let j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function renderQuiz(shufOrder, selAnswers = {}) {
+  let form = document.getElementById('quizForm');
+  form.innerHTML = '';
+  for (let idx = 0; idx < shufOrder.length; idx++) {
+    const qObj = questionsData[shufOrder[idx]];
+    const qNum = idx + 1;
+    let qDiv = document.createElement('div');
+    qDiv.className = "question";
+    qDiv.innerHTML = `<p><strong>Q${qNum}.</strong> ${qObj.q}</p>`;
+    let optDiv = document.createElement('div');
+    optDiv.className = "options";
+    for (let opt = 0; opt < qObj.opts.length; opt++) {
+      let id = `q${qNum}o${opt}`;
+      let checked = (selAnswers[`q${qNum}`] === String.fromCharCode(65 + opt)) ? 'checked' : '';
+      optDiv.innerHTML += `<label><input type="radio" name="q${qNum}" value="${String.fromCharCode(65 + opt)}" id="${id}" ${checked}> ${qObj.opts[opt]}</label><br>`;
+    }
+    qDiv.appendChild(optDiv);
+    let expDiv = document.createElement('div');
+    expDiv.className = "explanation";
+    expDiv.id = `exp${qNum}`;
+    expDiv.style.display = 'none';
+    expDiv.textContent = qObj.exp;
+    qDiv.appendChild(expDiv);
+    form.appendChild(qDiv);
+  }
+
+  // Save answers on every change (refresh-resume logic)
+  setTimeout(() => {
+    document.querySelectorAll('input[type=radio]').forEach(radio => {
+      radio.addEventListener('change', function() {
+        let sel = {};
+        for(let i=1; i<=shufOrder.length; i++) {
+          let options = document.getElementsByName("q"+i);
+          for(let op of options) if(op.checked) sel['q'+i]=op.value;
+        }
+        localStorage.setItem(SEL_KEY, JSON.stringify(sel));
+      });
+    });
+  }, 100);
+}
+
+function formatTime(sec) {
+  let m = Math.floor(sec/60), s = sec%60;
+  return `${m}m ${s<10?'0'+s:s}s`;
+}
+
+function updateTimer() {
+  let timerElem = document.getElementById('timer');
+  if (remaining > 0) {
+    timerElem.innerHTML = "Time Left: " + formatTime(remaining);
+    remaining--;
+    localStorage.setItem(TIMELEFT_KEY, remaining);
+  } else {
+    timerElem.innerHTML = "Time Left: 0m 00s";
+    stopTimer();
+    autoSubmit();
+  }
+}
+
+function startTimer() {
+  testStarted = true;
+  startTimestamp = Date.now();
+  if (timerInt) clearInterval(timerInt);
+  document.getElementById('timer').innerHTML = "Time Left: " + formatTime(remaining);
+  timerInt = setInterval(updateTimer, 1000);
+}
+
+function stopTimer() {
+  if(timerInt) clearInterval(timerInt);
+  if (testStarted && startTimestamp) {
+    usedTime = Math.max(TOTAL_TIME - remaining, 0);
+  }
+}
+
+window.onload = function() {
+  let locked = localStorage.getItem(LOCK_KEY);
+  let shuffleSaved = localStorage.getItem(SHUFFLE_KEY);
+  let selSaved = localStorage.getItem(SEL_KEY);
+  let tleft = parseInt(localStorage.getItem(TIMELEFT_KEY));
+  if (locked === 'yes' && shuffleSaved) {
+    shuffled = JSON.parse(shuffleSaved);
+    let sel = JSON.parse(selSaved || '{}');
+    renderQuiz(shuffled, sel);
+    markQuiz(sel, true);
+    document.getElementById('timer').innerHTML = "Total Time: " + formatTime(TOTAL_TIME);
+    document.getElementById("lockedMsg").style.display = "";
+    document.getElementById("saveBtn").style.display = "";
+    document.getElementById("submitBtn").disabled = true;
+    document.getElementById("quizForm").classList.add("disabled");
+    for (let i = 1; i <= shuffled.length; i++) document.getElementById("exp"+i).style.display="block";
+    let radios = document.querySelectorAll('input[type=radio]');
+    radios.forEach(r => r.disabled = true);
+    // Restore the score/result box
+    let scoreHtml = localStorage.getItem(SCORE_KEY) || '';
+    let prevResult = document.querySelector('.result');
+    if (prevResult) prevResult.remove();
+    if (scoreHtml) {
+      document.getElementById("quizForm").insertAdjacentHTML("afterend", scoreHtml);
+    }
+  }
+  else if (shuffleSaved && selSaved && tleft > 0) {
+    shuffled = JSON.parse(shuffleSaved);
+    let sel = JSON.parse(selSaved || '{}');
+    renderQuiz(shuffled, sel);
+    remaining = tleft;
+    startTimer();
+  } else {
+    shuffled = Array.from(Array(questionsData.length).keys());
+    shuffleArray(shuffled);
+    renderQuiz(shuffled);
+    localStorage.setItem(SHUFFLE_KEY, JSON.stringify(shuffled));
+    remaining = TOTAL_TIME;
+    localStorage.setItem(TIMELEFT_KEY, remaining);
+    startTimer();
+  }
+};
+
+function autoSubmit() {
+  if(localStorage.getItem(LOCK_KEY)==='yes') return;
+  alert("Time is up! The test will be auto-submitted.");
+  submitQuiz();
+}
+
+function submitQuiz() {
+  if(localStorage.getItem(LOCK_KEY)==='yes') return;
+  let sel = {};
+  let total = shuffled.length, score = 0;
+  for(let i=1; i<=total; i++) {
+    let options = document.getElementsByName("q"+i);
+    for(let op of options) {
+      if(op.checked) sel['q'+i]=op.value;
+    }
+  }
+  score = markQuiz(sel, false);
+  for(let i=1; i<=total; i++) document.getElementById("exp"+i).style.display="block";
+  stopTimer();
+  let timeUsed = TOTAL_TIME - remaining;
+  if(timeUsed <= 0 || isNaN(timeUsed)) timeUsed = TOTAL_TIME;
+  let percent = ((score/total)*100).toFixed(2);
+  let resultText = `<div class="result"><div>Test submitted!</div><br><span style="font-size: 2em; color: #326c33;"><b>Score: ${score} / ${total} (${percent}%)</b></span><br><span id="timeStr">Time: ${formatTime(timeUsed)}</span></div>`;
+  let resultDiv = document.getElementById("result");
+  if (resultDiv) resultDiv.outerHTML = resultText;
+  else document.getElementById("quizForm").insertAdjacentHTML("afterend", resultText);
+  document.getElementById("usedTime").innerHTML = ``;
+  document.getElementById("usedTime").style.display = "none";
+  document.getElementById("submitBtn").disabled = true;
+  document.getElementById("quizForm").classList.add("disabled");
+  document.getElementById("saveBtn").style.display="";
+  document.getElementById("lockedMsg").style.display="";
+  let radios = document.querySelectorAll('input[type=radio]');
+  radios.forEach(r => r.disabled = true);
+  localStorage.setItem(LOCK_KEY, 'yes');
+  localStorage.setItem(SEL_KEY, JSON.stringify(sel));
+  localStorage.setItem(SCORE_KEY, resultText);
+  localStorage.setItem(TIME_KEY, timeUsed);
+  localStorage.setItem(SHUFFLE_KEY, JSON.stringify(shuffled));
+  localStorage.removeItem(TIMELEFT_KEY);
+}
+
+function markQuiz(sel, reviewMode) {
+  let score = 0, total = shuffled.length;
+  for(let i=1; i<=total; i++) {
+    let user = sel['q'+i];
+    let radios = document.getElementsByName("q"+i);
+    for(let op of radios) {
+      op.parentElement.classList.remove('correct','incorrect');
+      let oldMark = op.parentElement.querySelector('.unattended');
+      if (oldMark) oldMark.remove();
+    }
+    let qIdx = shuffled[i-1];
+    let correctIdx = questionsData[qIdx].correct;
+    let correctLetter = String.fromCharCode(65 + correctIdx);
+
+    if(user) {
+      for(let op of radios) {
+        if(op.value===user) {
+          if(op.value===correctLetter) {
+            score++;
+            op.parentElement.classList.add('correct');
+          } else {
+            op.parentElement.classList.add('incorrect');
+          }
+        }
+      }
+    } else {
+      let parent = radios[radios.length-1]?.parentElement?.parentElement;
+      if (parent && !parent.querySelector('.unattended')) {
+        let label = document.createElement("span");
+        label.className = "unattended";
+        label.innerText = "Un Attended";
+        parent.appendChild(label);
+      }
+    }
+    for(let op of radios) {
+      if(op.value===correctLetter) op.parentElement.classList.add('correct');
+    }
+    document.getElementById("exp"+i).style.display="block";
+  }
+  return score;
+}
+
+function saveReview() {
+  let clone = document.documentElement.cloneNode(true);
+  let scripts = clone.querySelectorAll('script');
+  scripts.forEach(s => s.remove());
+  let submitBtn = clone.querySelector('.submit-btn');
+  if (submitBtn) submitBtn.remove();
+  let saveBtn = clone.querySelector('.save-btn');
+  if (saveBtn) saveBtn.remove();
+  let timerElem = clone.querySelector('#timer');
+  if (timerElem) timerElem.remove();
+  let lockedMsg = clone.querySelector('#lockedMsg');
+  if (lockedMsg) lockedMsg.style.display = "";
+  let quizForm = clone.querySelector('#quizForm');
+  if (quizForm) quizForm.classList.add('disabled');
+  let radios = clone.querySelectorAll('input[type=radio]');
+  radios.forEach(r => {
+    r.disabled = true;
+    r.setAttribute('disabled', 'disabled');
+  });
+  let html = "<!DOCTYPE html>\n" + clone.outerHTML.replace(/<title>(.*?)<\/title>/, '<title>$1 (Review Only)</title>');
+  let blob = new Blob([html], {type:"text/html"});
+  let a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "Combine_Units_138Q_Review.html";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+</script>
+</body>
+</html>
