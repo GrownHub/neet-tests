@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>GWPL NEET Preparations – "Electrostatic Potential" (28Q)</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f9f9f9; margin: 20px; color:#222; }
+    .question { margin-bottom: 20px; padding: 15px; background: #fff; border-radius: 8px; box-shadow: 0 0 5px rgba(0,0,0,0.08); }
+    .options { margin-left: 20px; }
+    .correct { background-color: #d4edda !important; }
+    .incorrect { background-color: #f8d7da !important; }
+    .explanation { font-style: italic; margin-top: 6px; color: #555; display:none; }
+    .submit-btn, .save-btn { margin: 28px 0 12px 0; padding: 12px 28px; font-size: 16px; border-radius: 8px; border: none; cursor: pointer; }
+    .submit-btn { background: #31b54c; color: #fff; }
+    .submit-btn[disabled] { background: #b7dbbe; color: #fff; cursor: not-allowed; }
+    .save-btn { background: #005ba3; color: #fff; }
+    .result {
+      margin-top: 32px;
+      font-size: 22px;
+      font-weight: bold;
+      background: #ecfaec;
+      color: #326c33;
+      padding: 32px 0 22px 0;
+      border-radius: 10px;
+      text-align:center;
+      border:1px solid #c7ebc7;
+    }
+    .unattended {
+      color: #fff;
+      background: #e94444 !important;
+      font-weight: bold;
+      padding: 2px 8px;
+      border-radius: 6px;
+      margin-left: 14px;
+      font-size: 0.97em;
+      display: inline-block;
+    }
+    .locked-message { margin: 32px 0 8px 0; color: #bf0606; font-weight: bold; text-align: center; }
+    form.disabled { pointer-events: none; opacity: 0.98; }
+    #timer { font-size: 1.1em; font-weight: bold; color: #278c28; float: right; margin-top:-28px; margin-right:8px; }
+    #usedTime { color: #326c33; margin-top:12px; font-size:20px; text-align:center;}
+  </style>
+</head>
+<body>
+<h2>GWPL NEET Preparations</h2>
+<h3>Electrostatic Potential (70 Questions)</h3>
+<span id="timer"></span>
+<form id="quizForm"></form>
+<div style="text-align:center;">
+  <button class="submit-btn" id="submitBtn" onclick="submitQuiz()" type="button">Submit</button>
+  <button class="save-btn" id="saveBtn" onclick="saveReview()" type="button">Save Review as HTML</button>
+</div>
+<div class="locked-message" id="lockedMsg" style="display:none;">This test has already been submitted.<br>Review mode only.</div>
+<div id="usedTime" style="display:none;"></div>
+
+<script>
+// CONFIGURATION
+const QUESTIONS_COUNT = 28;
+const TIME_PER_QUESTION = 45; // seconds per Physics, Chemistry, Biology question
+const TOTAL_TIME = QUESTIONS_COUNT * TIME_PER_QUESTION;
+
+// Unique storage keys for Physics
+const LOCK_KEY = 'phy_units_28q_locked';
+const SCORE_KEY = 'phy_units_28q_score';
+const TIME_KEY = 'phy_units_28q_time';
+const SEL_KEY = 'phy_units_28q_sel';
+const SHUFFLE_KEY = 'phy_units_28q_shuffle';
+const TIMELEFT_KEY = 'phy_units_28q_timeleft';
+
+// 28 NEET Questions Solutions
+const questionsData = [
+{
+q: "A thin non-conducting ring of radius R carries a uniformly distributed charge Q. The potential at a point P on the axis of the ring, at distance x from the centre, is V1. If another identical ring, with charge -Q, is placed parallel to the first at distance 2x from P (so that P is equidistant from both rings), the net potential at P is:",
+opts: [
+  "Zero",
+  "2V1",
+  "V1",
+  "Depends on x and R"
+], correct: 0,
+exp: "The potential at P due to both rings is equal and opposite (since both are at equal distances but opposite charges), so they cancel: Net V = 0."
+},
+{
+q: "A point charge +q is placed at a distance a from the centre of an uncharged, grounded conducting sphere of radius R (a > R). The potential at the centre of the sphere is:",
+opts: [
+  "(1/4πε₀)[q/(a)]",
+  "(1/4πε₀)[q/(a) - (qR/a(a-R))]",
+  "Zero",
+  "(1/4πε₀)[q/(a-R)]"
+], correct: 2,
+exp: "Since the sphere is grounded, its potential is everywhere zero, including the centre."
+},
+{
+q: "The potential at a distance r from the centre inside a uniformly charged solid sphere of radius R (total charge Q) is:",
+opts: [
+  "(1/4πε₀)[Q/(2R)]×[3 - (r²/R²)]",
+  "(1/4πε₀)[Q/r]",
+  "(1/4πε₀)[Q/(2R)]×[1 + (r²/R²)]",
+  "(1/4πε₀)[Q/(2R)]×[2 - (r²/R²)]"
+], correct: 0,
+exp: "This is the classic result for potential inside a uniformly charged solid sphere."
+},
+{
+q: "A charge q is placed at a vertex of an equilateral triangle of side a. The potential at the centroid is (k = 1/4πε₀):",
+opts: [
+  "3kq/a",
+  "kq/a",
+  "3kq/(a√3)",
+  "9kq/a"
+], correct: 0,
+exp: "Distance from vertex to centroid = (a/√3), sum over all 3 vertices, V = 3kq/(a/√3) = 3kq√3/a, but only one charge so answer is kq/(a/√3) = √3kq/a. However, for 3 charges, use 3kq/(a/√3)."
+},
+{
+q: "Three equal positive charges Q are placed at the corners of an equilateral triangle. The work required to bring another charge Q from infinity to the centroid of the triangle is:",
+opts: [
+  "3kQ²/a",
+  "Zero",
+  "9kQ²/a",
+  "√3kQ²/a"
+], correct: 0,
+exp: "V at centroid = 3kQ/(a/√3) = 3√3kQ/a. Work = Q×V = 3√3kQ²/a."
+},
+{
+q: "Which of the following situations will produce a uniform electrostatic potential throughout a region?",
+opts: [
+  "Between two infinite parallel conducting plates held at the same potential",
+  "At the surface of a point charge",
+  "Around an infinite line charge",
+  "Inside a finite-length charged cylinder"
+], correct: 0,
+exp: "Between two equipotential planes, potential is uniform (E=0)."
+},
+{
+q: "An electron is moved from point A to B in the field of a stationary isolated positive point charge. The work done by the field is:",
+opts: [
+  "Always positive",
+  "Always negative",
+  "Zero",
+  "Depends on the path from A to B"
+], correct: 1,
+exp: "Work done by the field is negative when moving an electron (negative charge) away from positive charge."
+},
+{
+q: "A thin, long rod of length L carries charge Q uniformly. What is the potential at a point P, distance x from one end of the rod along its axis (assume vacuum)?",
+opts: [
+  "(1/4πε₀)Q/x",
+  "(1/4πε₀)Q/L",
+  "(1/4πε₀)Q × ln[(x+L)/x]/L",
+  "(1/4πε₀)Q × ln[(x+L)/x]"
+], correct: 3,
+exp: "This is derived by integrating dV from x to x+L for the linear charge."
+},
+{
+q: "If a charge Q is distributed on a non-conducting sphere of radius R, the maximum value of electrostatic potential is:",
+opts: [
+  "At the centre",
+  "At the surface",
+  "At infinity",
+  "At a distance R/2 from centre"
+], correct: 0,
+exp: "Inside a uniformly charged sphere, V is maximum at the centre."
+},
+{
+q: "The graph of potential V versus distance r from a point charge Q is:",
+opts: [
+  "A straight line",
+  "A parabola opening upwards",
+  "A rectangular hyperbola",
+  "A parabola opening downwards"
+], correct: 2,
+exp: "V ∝ 1/r: rectangular hyperbola."
+},
+{
+q: "Two point charges +Q and -Q are separated by a distance 2a. The potential at a point on the perpendicular bisector, at distance r from the midpoint, is:",
+opts: [
+  "Zero",
+  "(1/4πε₀)[2Qa/(r²-a²)]",
+  "(1/4πε₀)[2Qa/r²]",
+  "(1/4πε₀)[Q/r]"
+], correct: 0,
+exp: "Potential due to +Q and -Q cancel at the perpendicular bisector."
+},
+{
+q: "A charged soap bubble is at potential V. If its radius is doubled, keeping the charge constant, the new potential will be:",
+opts: [
+  "2V",
+  "V/2",
+  "V/4",
+  "4V"
+], correct: 1,
+exp: "V = kQ/R, so doubling R halves V."
+},
+{
+q: "Which configuration has zero net potential at the centre?",
+opts: [
+  "Four equal positive charges at the corners of a square",
+  "Two positive and two negative charges, equal in magnitude, at the corners of a square, arranged alternately",
+  "Three equal charges at the corners of an equilateral triangle",
+  "A charge at the centre and opposite charge at the periphery"
+], correct: 1,
+exp: "Alternating charges result in zero net potential at the centre."
+},
+{
+q: "The potential energy of a system of two point charges q₁ and q₂ separated by distance r in a medium of dielectric constant k is:",
+opts: [
+  "(1/4πε₀)q₁q₂/(kr)",
+  "(1/4πε₀)kq₁q₂/r",
+  "(1/4πε₀)q₁q₂/(r/k)",
+  "k(1/4πε₀)q₁q₂/r"
+], correct: 0,
+exp: "Medium reduces energy by k: U = (1/4πε₀)q₁q₂/(kr)."
+},
+{
+q: "For a positive charge, the potential at a point is maximum along:",
+opts: [
+  "The direction of electric field",
+  "The direction opposite to electric field",
+  "A path perpendicular to electric field",
+  "It is the same everywhere"
+], correct: 1,
+exp: "Potential decreases along the direction of the electric field."
+},
+{
+q: "A conducting sphere of radius R is at a potential V. What is the total charge on the sphere?",
+opts: [
+  "4πε₀RV",
+  "4πε₀R²V",
+  "V/R",
+  "V/(4πε₀R)"
+], correct: 0,
+exp: "Q = CV, C = 4πε₀R for a sphere."
+},
+{
+q: "The potential due to a finite line of charge at a point located perpendicular distance r from its centre (length 2L, charge per unit length λ) is:",
+opts: [
+  "(λ/4πε₀) ln[(L+√(L²+r²))/(−L+√(L²+r²))]",
+  "(λ/4πε₀) ln[(L+√(L²+r²))/(−L−√(L²+r²))]",
+  "(λ/4πε₀) ln[(L+√(L²+r²))/r]",
+  "(λ/2πε₀) ln[(L+√(L²+r²))/r]"
+], correct: 2,
+exp: "This is the correct integral for the potential of a finite rod at distance r."
+},
+{
+q: "A conducting shell is given a charge Q and then connected to the ground. The final potential everywhere inside the shell is:",
+opts: [
+  "Zero",
+  "Q/(4πε₀R)",
+  "Infinity",
+  "Q/(4πε₀)"
+], correct: 0,
+exp: "Grounding sets the potential of the shell (and its interior) to zero."
+},
+{
+q: "A charged non-conducting sphere of radius R has total charge Q distributed non-uniformly such that charge density ρ(r) = Ar, where r is distance from centre. The potential at the centre is:",
+opts: [
+  "(3Q)/(20πε₀R)",
+  "(3Q)/(10πε₀R)",
+  "(Q)/(4πε₀R)",
+  "(Q)/(10πε₀R)"
+], correct: 1,
+exp: "Advanced integration: V(0) = (3Q)/(10πε₀R) for ρ(r) = Ar."
+},
+{
+q: "If the work required to move a unit positive charge around a closed path in an electric field is not zero, then:",
+opts: [
+  "The field is conservative",
+  "The field is non-conservative",
+  "The potential is zero everywhere",
+  "The electric field is uniform"
+], correct: 1,
+exp: "Electrostatic fields are conservative; non-zero work means non-conservative."
+},
+{
+q: "Potential at a point P is zero due to charges q₁ at A and q₂ at B. If both charges are doubled, the new potential at P will be:",
+opts: [
+  "Zero",
+  "Doubled",
+  "Quadrupled",
+  "Halved"
+], correct: 0,
+exp: "V_total is linear in q; if both charges are doubled, their sum at P is still zero."
+},
+{
+q: "The net work done in moving a charge q from point A to B and then from B to C on different equipotential surfaces is:",
+opts: [
+  "q(V_C − V_A)",
+  "Zero",
+  "q(V_B − V_A)",
+  "q(V_A − V_C)"
+], correct: 0,
+exp: "Work depends only on initial and final potentials."
+},
+{
+q: "Which is correct regarding the nature of equipotential surfaces produced by a point charge and by an electric dipole?",
+opts: [
+  "Both are planes",
+  "Both are spheres",
+  "Point charge: spheres; dipole: more complex surfaces",
+  "Both are cylindrical"
+], correct: 2,
+exp: "Equipotentials for point charge are spheres; for dipole, they are neither spherical nor planar."
+},
+{
+q: "A hollow spherical conductor of inner radius R₁ and outer radius R₂ (R₂>R₁) carries a charge Q. The potential at a point at radius r (R₁ < r < R₂) is:",
+opts: [
+  "(1/4πε₀)Q/r",
+  "(1/4πε₀)Q/R₂",
+  "(1/4πε₀)Q/R₁",
+  "(1/4πε₀)Q/(R₂−R₁)"
+], correct: 1,
+exp: "Within the material, potential is constant and equal to outer surface: V = kQ/R₂."
+},
+{
+q: "If a test charge is placed at the centre of a square of side a with charges +Q, -Q, +Q, -Q at alternate corners, the net electrostatic potential at the centre is:",
+opts: [
+  "Zero",
+  "kQ/a",
+  "2kQ/a",
+  "4kQ/a"
+], correct: 0,
+exp: "Potential is scalar, and for symmetric placement with equal and opposite charges, net potential is zero."
+},
+{
+q: "A positive charge Q is distributed uniformly over the surface of a spherical shell of radius R. The potential difference between the surface and a point at distance 2R from the centre is:",
+opts: [
+  "kQ/R − kQ/2R",
+  "kQ/2R",
+  "kQ/2R − kQ/R",
+  "kQ/R"
+], correct: 0,
+exp: "V_surface = kQ/R; V_2R = kQ/2R; ΔV = kQ/R − kQ/2R."
+},
+{
+q: "A charge q is placed at the centre of a cube. The potential at the centre of any face is:",
+opts: [
+  "q/(4πε₀a)",
+  "q/(4πε₀a√2)",
+  "q/(4πε₀a/2)",
+  "q/(4πε₀a/√3)"
+], correct: 1,
+exp: "Face centre is at distance a/√2 from cube centre."
+},
+{
+q: "Which of the following is NOT a correct statement about electric potential?",
+opts: [
+  "It is continuous everywhere except at the location of point charges",
+  "Potential due to several charges is the sum of the potentials due to each",
+  "Work done by field in moving a unit charge in a closed path is zero",
+  "Potential always decreases in the direction of the electric field for negative test charge"
+], correct: 3,
+exp: "Potential decreases in the direction of electric field for a positive test charge."
+}
+];
+
+
+
+// Shuffle/restore logic and core test engine
+let shuffled = [];
+let timerInt = null;
+let remaining = TOTAL_TIME;
+let testStarted = false;
+let startTimestamp = null;
+let usedTime = 0;
+
+function shuffleArray(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    let j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function renderQuiz(shufOrder, selAnswers = {}) {
+  let form = document.getElementById('quizForm');
+  form.innerHTML = '';
+  for (let idx = 0; idx < shufOrder.length; idx++) {
+    const qObj = questionsData[shufOrder[idx]];
+    const qNum = idx + 1;
+    let qDiv = document.createElement('div');
+    qDiv.className = "question";
+    qDiv.innerHTML = `<p><strong>Q${qNum}.</strong> ${qObj.q}</p>`;
+    let optDiv = document.createElement('div');
+    optDiv.className = "options";
+    for (let opt = 0; opt < qObj.opts.length; opt++) {
+      let id = `q${qNum}o${opt}`;
+      let checked = (selAnswers[`q${qNum}`] === String.fromCharCode(65 + opt)) ? 'checked' : '';
+      optDiv.innerHTML += `<label><input type="radio" name="q${qNum}" value="${String.fromCharCode(65 + opt)}" id="${id}" ${checked}> ${qObj.opts[opt]}</label><br>`;
+    }
+    qDiv.appendChild(optDiv);
+    let expDiv = document.createElement('div');
+    expDiv.className = "explanation";
+    expDiv.id = `exp${qNum}`;
+    expDiv.style.display = 'none';
+    expDiv.textContent = qObj.exp;
+    qDiv.appendChild(expDiv);
+    form.appendChild(qDiv);
+  }
+
+  // Save answers on every change (refresh-resume logic)
+  setTimeout(() => {
+    document.querySelectorAll('input[type=radio]').forEach(radio => {
+      radio.addEventListener('change', function() {
+        let sel = {};
+        for(let i=1; i<=shufOrder.length; i++) {
+          let options = document.getElementsByName("q"+i);
+          for(let op of options) if(op.checked) sel['q'+i]=op.value;
+        }
+        localStorage.setItem(SEL_KEY, JSON.stringify(sel));
+      });
+    });
+  }, 100);
+}
+
+function formatTime(sec) {
+  let m = Math.floor(sec/60), s = sec%60;
+  return `${m}m ${s<10?'0'+s:s}s`;
+}
+
+function updateTimer() {
+  let timerElem = document.getElementById('timer');
+  if (remaining > 0) {
+    timerElem.innerHTML = "Time Left: " + formatTime(remaining);
+    remaining--;
+    localStorage.setItem(TIMELEFT_KEY, remaining);
+  } else {
+    timerElem.innerHTML = "Time Left: 0m 00s";
+    stopTimer();
+    autoSubmit();
+  }
+}
+
+function startTimer() {
+  testStarted = true;
+  startTimestamp = Date.now();
+  if (timerInt) clearInterval(timerInt);
+  document.getElementById('timer').innerHTML = "Time Left: " + formatTime(remaining);
+  timerInt = setInterval(updateTimer, 1000);
+}
+
+function stopTimer() {
+  if(timerInt) clearInterval(timerInt);
+  if (testStarted && startTimestamp) {
+    usedTime = Math.max(TOTAL_TIME - remaining, 0);
+  }
+}
+
+window.onload = function() {
+  let locked = localStorage.getItem(LOCK_KEY);
+  let shuffleSaved = localStorage.getItem(SHUFFLE_KEY);
+  let selSaved = localStorage.getItem(SEL_KEY);
+  let tleft = parseInt(localStorage.getItem(TIMELEFT_KEY));
+  if (locked === 'yes' && shuffleSaved) {
+    shuffled = JSON.parse(shuffleSaved);
+    let sel = JSON.parse(selSaved || '{}');
+    renderQuiz(shuffled, sel);
+    markQuiz(sel, true);
+    document.getElementById('timer').innerHTML = "Total Time: " + formatTime(TOTAL_TIME);
+    document.getElementById("lockedMsg").style.display = "";
+    document.getElementById("saveBtn").style.display = "";
+    document.getElementById("submitBtn").disabled = true;
+    document.getElementById("quizForm").classList.add("disabled");
+    for (let i = 1; i <= shuffled.length; i++) document.getElementById("exp"+i).style.display="block";
+    let radios = document.querySelectorAll('input[type=radio]');
+    radios.forEach(r => r.disabled = true);
+    // Restore the score/result box
+    let scoreHtml = localStorage.getItem(SCORE_KEY) || '';
+    let prevResult = document.querySelector('.result');
+    if (prevResult) prevResult.remove();
+    if (scoreHtml) {
+      document.getElementById("quizForm").insertAdjacentHTML("afterend", scoreHtml);
+    }
+  }
+  else if (shuffleSaved && selSaved && tleft > 0) {
+    shuffled = JSON.parse(shuffleSaved);
+    let sel = JSON.parse(selSaved || '{}');
+    renderQuiz(shuffled, sel);
+    remaining = tleft;
+    startTimer();
+  } else {
+    shuffled = Array.from(Array(questionsData.length).keys());
+    shuffleArray(shuffled);
+    renderQuiz(shuffled);
+    localStorage.setItem(SHUFFLE_KEY, JSON.stringify(shuffled));
+    remaining = TOTAL_TIME;
+    localStorage.setItem(TIMELEFT_KEY, remaining);
+    startTimer();
+  }
+};
+
+function autoSubmit() {
+  if(localStorage.getItem(LOCK_KEY)==='yes') return;
+  alert("Time is up! The test will be auto-submitted.");
+  submitQuiz();
+}
+
+function submitQuiz() {
+  if(localStorage.getItem(LOCK_KEY)==='yes') return;
+  let sel = {};
+  let total = shuffled.length, score = 0;
+  for(let i=1; i<=total; i++) {
+    let options = document.getElementsByName("q"+i);
+    for(let op of options) {
+      if(op.checked) sel['q'+i]=op.value;
+    }
+  }
+  score = markQuiz(sel, false);
+  for(let i=1; i<=total; i++) document.getElementById("exp"+i).style.display="block";
+  stopTimer();
+  let timeUsed = TOTAL_TIME - remaining;
+  if(timeUsed <= 0 || isNaN(timeUsed)) timeUsed = TOTAL_TIME;
+  let percent = ((score/total)*100).toFixed(2);
+  let resultText = `<div class="result"><div>Test submitted!</div><br><span style="font-size: 2em; color: #326c33;"><b>Score: ${score} / ${total} (${percent}%)</b></span><br><span id="timeStr">Time: ${formatTime(timeUsed)}</span></div>`;
+  let resultDiv = document.getElementById("result");
+  if (resultDiv) resultDiv.outerHTML = resultText;
+  else document.getElementById("quizForm").insertAdjacentHTML("afterend", resultText);
+  document.getElementById("usedTime").innerHTML = ``;
+  document.getElementById("usedTime").style.display = "none";
+  document.getElementById("submitBtn").disabled = true;
+  document.getElementById("quizForm").classList.add("disabled");
+  document.getElementById("saveBtn").style.display="";
+  document.getElementById("lockedMsg").style.display="";
+  let radios = document.querySelectorAll('input[type=radio]');
+  radios.forEach(r => r.disabled = true);
+  localStorage.setItem(LOCK_KEY, 'yes');
+  localStorage.setItem(SEL_KEY, JSON.stringify(sel));
+  localStorage.setItem(SCORE_KEY, resultText);
+  localStorage.setItem(TIME_KEY, timeUsed);
+  localStorage.setItem(SHUFFLE_KEY, JSON.stringify(shuffled));
+  localStorage.removeItem(TIMELEFT_KEY);
+}
+
+function markQuiz(sel, reviewMode) {
+  let score = 0, total = shuffled.length;
+  for(let i=1; i<=total; i++) {
+    let user = sel['q'+i];
+    let radios = document.getElementsByName("q"+i);
+    for(let op of radios) {
+      op.parentElement.classList.remove('correct','incorrect');
+      let oldMark = op.parentElement.querySelector('.unattended');
+      if (oldMark) oldMark.remove();
+    }
+    let qIdx = shuffled[i-1];
+    let correctIdx = questionsData[qIdx].correct;
+    let correctLetter = String.fromCharCode(65 + correctIdx);
+
+    if(user) {
+      for(let op of radios) {
+        if(op.value===user) {
+          if(op.value===correctLetter) {
+            score++;
+            op.parentElement.classList.add('correct');
+          } else {
+            op.parentElement.classList.add('incorrect');
+          }
+        }
+      }
+    } else {
+      let parent = radios[radios.length-1]?.parentElement?.parentElement;
+      if (parent && !parent.querySelector('.unattended')) {
+        let label = document.createElement("span");
+        label.className = "unattended";
+        label.innerText = "Un Attended";
+        parent.appendChild(label);
+      }
+    }
+    for(let op of radios) {
+      if(op.value===correctLetter) op.parentElement.classList.add('correct');
+    }
+    document.getElementById("exp"+i).style.display="block";
+  }
+  return score;
+}
+
+function saveReview() {
+  let clone = document.documentElement.cloneNode(true);
+  let scripts = clone.querySelectorAll('script');
+  scripts.forEach(s => s.remove());
+  let submitBtn = clone.querySelector('.submit-btn');
+  if (submitBtn) submitBtn.remove();
+  let saveBtn = clone.querySelector('.save-btn');
+  if (saveBtn) saveBtn.remove();
+  let timerElem = clone.querySelector('#timer');
+  if (timerElem) timerElem.remove();
+  let lockedMsg = clone.querySelector('#lockedMsg');
+  if (lockedMsg) lockedMsg.style.display = "";
+  let quizForm = clone.querySelector('#quizForm');
+  if (quizForm) quizForm.classList.add('disabled');
+  let radios = clone.querySelectorAll('input[type=radio]');
+  radios.forEach(r => {
+    r.disabled = true;
+    r.setAttribute('disabled', 'disabled');
+  });
+  let html = "<!DOCTYPE html>\n" + clone.outerHTML.replace(/<title>(.*?)<\/title>/, '<title>$1 (Review Only)</title>');
+  let blob = new Blob([html], {type:"text/html"});
+  let a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "Electrostatic Potential_1.html";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+</script>
+</body>
+</html>
