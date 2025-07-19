@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>GWPL NEET Preparations – "Electrostatic Potential" (67Q)</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f9f9f9; margin: 20px; color:#222; }
+    .question { margin-bottom: 20px; padding: 15px; background: #fff; border-radius: 8px; box-shadow: 0 0 5px rgba(0,0,0,0.08); }
+    .options { margin-left: 20px; }
+    .correct { background-color: #d4edda !important; }
+    .incorrect { background-color: #f8d7da !important; }
+    .explanation { font-style: italic; margin-top: 6px; color: #555; display:none; }
+    .submit-btn, .save-btn { margin: 28px 0 12px 0; padding: 12px 28px; font-size: 16px; border-radius: 8px; border: none; cursor: pointer; }
+    .submit-btn { background: #31b54c; color: #fff; }
+    .submit-btn[disabled] { background: #b7dbbe; color: #fff; cursor: not-allowed; }
+    .save-btn { background: #005ba3; color: #fff; }
+    .result {
+      margin-top: 32px;
+      font-size: 22px;
+      font-weight: bold;
+      background: #ecfaec;
+      color: #326c33;
+      padding: 32px 0 22px 0;
+      border-radius: 10px;
+      text-align:center;
+      border:1px solid #c7ebc7;
+    }
+    .unattended {
+      color: #fff;
+      background: #e94444 !important;
+      font-weight: bold;
+      padding: 2px 8px;
+      border-radius: 6px;
+      margin-left: 14px;
+      font-size: 0.97em;
+      display: inline-block;
+    }
+    .locked-message { margin: 32px 0 8px 0; color: #bf0606; font-weight: bold; text-align: center; }
+    form.disabled { pointer-events: none; opacity: 0.98; }
+    #timer { font-size: 1.1em; font-weight: bold; color: #278c28; float: right; margin-top:-28px; margin-right:8px; }
+    #usedTime { color: #326c33; margin-top:12px; font-size:20px; text-align:center;}
+  </style>
+</head>
+<body>
+<h2>GWPL NEET Preparations</h2>
+<h3>Electrostatic Potential (70 Questions)</h3>
+<span id="timer"></span>
+<form id="quizForm"></form>
+<div style="text-align:center;">
+  <button class="submit-btn" id="submitBtn" onclick="submitQuiz()" type="button">Submit</button>
+  <button class="save-btn" id="saveBtn" onclick="saveReview()" type="button">Save Review as HTML</button>
+</div>
+<div class="locked-message" id="lockedMsg" style="display:none;">This test has already been submitted.<br>Review mode only.</div>
+<div id="usedTime" style="display:none;"></div>
+
+<script>
+// CONFIGURATION
+const QUESTIONS_COUNT = 67;
+const TIME_PER_QUESTION = 45; // seconds per Physics, Chemistry, Biology question
+const TOTAL_TIME = QUESTIONS_COUNT * TIME_PER_QUESTION;
+
+// Unique storage keys for Physics
+const LOCK_KEY = 'phy_units_67q_locked';
+const SCORE_KEY = 'phy_units_67q_score';
+const TIME_KEY = 'phy_units_67q_time';
+const SEL_KEY = 'phy_units_67q_sel';
+const SHUFFLE_KEY = 'phy_units_67q_shuffle';
+const TIMELEFT_KEY = 'phy_units_67q_timeleft';
+
+// 67 NEET Questions Solutions
+const questionsData = [
+{
+q: "The SI unit of electrostatic potential is:",
+opts: [
+  "Coulomb",
+  "Volt",
+  "Farad",
+  "Joule"
+], correct: 1,
+exp: "Electrostatic potential is measured in volts (V)."
+},
+{
+q: "The electrostatic potential at a point is defined as:",
+opts: [
+  "Work done in moving a unit positive charge from infinity to that point",
+  "Work done in moving a unit negative charge from that point to infinity",
+  "Potential energy per unit mass",
+  "Work done in moving a unit charge around a closed path"
+], correct: 0,
+exp: "Electrostatic potential is work done per unit positive charge from infinity to the point."
+},
+{
+q: "Which of the following is a scalar quantity?",
+opts: [
+  "Electric field",
+  "Electrostatic force",
+  "Electrostatic potential",
+  "Current density"
+], correct: 2,
+exp: "Electrostatic potential has magnitude but no direction (scalar)."
+},
+{
+q: "Potential due to a point charge q at distance r is:",
+opts: [
+  "kq/r^2",
+  "kq/r",
+  "kr/q",
+  "k/rq"
+], correct: 1,
+exp: "V = kq/r, where k = 1/4πε₀."
+},
+{
+q: "If the work done in moving 2 C of charge between two points is 10 J, the potential difference is:",
+opts: [
+  "5 V",
+  "10 V",
+  "20 V",
+  "0.2 V"
+], correct: 0,
+exp: "Potential difference = Work/Charge = 10/2 = 5 V."
+},
+{
+q: "If the potential at a point is zero, then the electric field at that point:",
+opts: [
+  "Must be zero",
+  "Must be non-zero",
+  "May or may not be zero",
+  "Is always infinite"
+], correct: 2,
+exp: "Zero potential does not imply zero electric field."
+},
+{
+q: "The electrostatic potential due to a dipole at a point on its axial line at distance r is:",
+opts: [
+  "kp/r^2",
+  "2kp/r^3",
+  "kp/r",
+  "2kp/r^2"
+], correct: 0,
+exp: "Axial potential: V = kp/r^2."
+},
+{
+q: "The electrostatic potential due to a dipole at a point on its equatorial line at distance r is:",
+opts: [
+  "kp/r^2",
+  "-kp/r^2",
+  "2kp/r^3",
+  "-2kp/r^2"
+], correct: 1,
+exp: "Equatorial potential: V = -kp/r^2."
+},
+{
+q: "The dimensional formula of electrostatic potential is:",
+opts: [
+  "ML^2T^-3A^-1",
+  "ML^2T^-2A^-1",
+  "ML^2T^-1A^-2",
+  "ML^1T^-2A^-1"
+], correct: 0,
+exp: "Potential = work/charge = (ML^2T^-2)/(AT) = ML^2T^-3A^-1."
+},
+{
+q: "The potential at the centre of a charged conducting sphere is:",
+opts: [
+  "Zero",
+  "Same as at the surface",
+  "Greater than at the surface",
+  "Less than at the surface"
+], correct: 1,
+exp: "Inside a conductor, potential is constant and equal to that at the surface."
+},
+{
+q: "Potential difference between two points A and B is defined as:",
+opts: [
+  "Work done in moving a unit charge from B to A",
+  "Work done in moving a unit charge from A to B",
+  "Work done in moving a unit charge around a closed path",
+  "Work done in moving a unit negative charge from A to B"
+], correct: 0,
+exp: "Potential difference = V_A - V_B = work per unit charge from B to A."
+},
+{
+q: "Equipotential surfaces:",
+opts: [
+  "Are always parallel",
+  "Are always perpendicular to electric field lines",
+  "May intersect each other",
+  "Have varying potential at each point"
+], correct: 1,
+exp: "Electric field is always perpendicular to equipotential surfaces."
+},
+{
+q: "Which statement is true about the work done in moving a charge on an equipotential surface?",
+opts: [
+  "Maximum",
+  "Minimum",
+  "Zero",
+  "Equal to the potential at that surface"
+], correct: 2,
+exp: "No work is done along an equipotential surface."
+},
+{
+q: "The potential at a distance r from a charge q in vacuum is 10 V. If the charge is doubled, potential becomes:",
+opts: [
+  "20 V",
+  "10 V",
+  "5 V",
+  "40 V"
+], correct: 0,
+exp: "V ∝ q, so doubling q doubles V."
+},
+{
+q: "If the potential at a point is positive, then the charge producing it is:",
+opts: [
+  "Negative",
+  "Positive",
+  "Zero",
+  "May be positive or negative"
+], correct: 1,
+exp: "Positive charge produces positive potential."
+},
+{
+q: "Potential at infinity due to a finite charge is:",
+opts: [
+  "Zero",
+  "Infinity",
+  "One",
+  "Negative"
+], correct: 0,
+exp: "At infinity, V = 0 for any finite charge."
+},
+{
+q: "Which of the following has the highest potential at the same distance from the charge?",
+opts: [
+  "2 C charge",
+  "1 C charge",
+  "0.5 C charge",
+  "All have same potential"
+], correct: 0,
+exp: "V = kq/r; higher q, higher V."
+},
+{
+q: "Electric field is related to potential by:",
+opts: [
+  "E = -dV/dr",
+  "E = V/r",
+  "E = V × r",
+  "E = dV/dr"
+], correct: 0,
+exp: "Electric field is the negative gradient of potential."
+},
+{
+q: "The SI unit of potential energy is:",
+opts: [
+  "Volt",
+  "Joule",
+  "Coulomb",
+  "Newton"
+], correct: 1,
+exp: "Potential energy is measured in joules (J)."
+},
+{
+q: "If the potential difference between two points is 100 V, the work done in moving 1 μC charge is:",
+opts: [
+  "0.1 J",
+  "100 μJ",
+  "0.0001 J",
+  "0.001 J"
+], correct: 3,
+exp: "W = qΔV = 1×10^-6 × 100 = 0.0001 J = 0.1 mJ."
+},
+{
+q: "Which of the following is NOT a property of electrostatic potential?",
+opts: [
+  "It is scalar",
+  "It is continuous except at the location of the charge",
+  "Its value decreases with distance from the charge",
+  "It is always positive"
+], correct: 3,
+exp: "Potential can be negative (for negative charges)."
+},
+{
+q: "For two equal positive charges placed at a distance d, the potential at their midpoint is:",
+opts: [
+  "Zero",
+  "2kq/d",
+  "kq/d",
+  "4kq/d"
+], correct: 1,
+exp: "V = kq/(d/2) + kq/(d/2) = 2kq/(d/2) = 4kq/d."
+},
+{
+q: "The potential at the centre of a square due to four equal charges q at corners is:",
+opts: [
+  "Zero",
+  "4kq/r",
+  "4kq/a",
+  "2√2 kq/a"
+], correct: 2,
+exp: "Each charge is at a distance (a/√2) from centre, so V = 4kq/(a/√2) = 4√2 kq/a."
+},
+{
+q: "Which of these points is at zero potential if two equal and opposite charges are placed 2 cm apart?",
+opts: [
+  "Midpoint between charges",
+  "A point 2 cm away from positive charge on the line joining",
+  "Infinity",
+  "Both 1 and 3"
+], correct: 3,
+exp: "Potential is zero at midpoint and at infinity."
+},
+{
+q: "Potential at the surface of a conducting sphere of radius R carrying charge Q is:",
+opts: [
+  "kQ/R^2",
+  "kQ/R",
+  "kQR",
+  "kR/Q"
+], correct: 1,
+exp: "V = kQ/R for conducting sphere."
+},
+{
+q: "Which is true for potential inside a charged conducting sphere?",
+opts: [
+  "Increases with r",
+  "Decreases with r",
+  "Remains constant",
+  "Zero"
+], correct: 2,
+exp: "Potential is constant everywhere inside a conductor."
+},
+{
+q: "For an isolated point charge, the equipotential surfaces are:",
+opts: [
+  "Planes",
+  "Cylinders",
+  "Spheres",
+  "Cones"
+], correct: 2,
+exp: "Equipotential surfaces for a point charge are concentric spheres."
+},
+{
+q: "The potential at a point 1 m from a 1 μC charge in vacuum is (k = 9 × 10⁹ Nm²/C²):",
+opts: [
+  "9 × 10³ V",
+  "9 × 10⁶ V",
+  "1 × 10⁶ V",
+  "1 × 10³ V"
+], correct: 0,
+exp: "V = kq/r = 9×10⁹ × 1×10^-6 / 1 = 9 × 10³ V."
+},
+{
+q: "Which quantity is the negative gradient of electrostatic potential?",
+opts: [
+  "Current",
+  "Charge density",
+  "Electric field",
+  "Electric potential energy"
+], correct: 2,
+exp: "Electric field E = -dV/dr."
+},
+{
+q: "If potential at A is higher than at B, then the direction of electric field is:",
+opts: [
+  "From B to A",
+  "From A to B",
+  "Zero",
+  "Depends on sign of charge"
+], correct: 1,
+exp: "Electric field points from higher to lower potential."
+},
+{
+q: "The potential at the centre of a ring of charge Q and radius R is:",
+opts: [
+  "kQ/R",
+  "Zero",
+  "kQ/(2R)",
+  "kQ/πR"
+], correct: 0,
+exp: "At centre, V = kQ/R."
+},
+{
+q: "The potential at a point on the axis of a charged ring is:",
+opts: [
+  "kQ/√(R²+x²)",
+  "kQ/(R+x)",
+  "Zero",
+  "kQ/(2R)"
+], correct: 0,
+exp: "V = kQ/√(R²+x²), where x is axial distance."
+},
+{
+q: "Potential energy of a system of two charges q₁ and q₂ separated by r is:",
+opts: [
+  "kq₁q₂/r",
+  "kq₁q₂/r²",
+  "kq₁²q₂²/r",
+  "kq₁/q₂r"
+], correct: 0,
+exp: "U = kq₁q₂/r."
+},
+{
+q: "The work done in bringing a unit positive charge from infinity to a point at potential V is:",
+opts: [
+  "V",
+  "1/V",
+  "0",
+  "-V"
+], correct: 0,
+exp: "Work done = q × V = 1 × V = V."
+},
+{
+q: "The electric potential at any point on the perpendicular bisector of an electric dipole is:",
+opts: [
+  "Zero",
+  "Maximum",
+  "Minimum",
+  "Equal to kqd/r^2"
+], correct: 0,
+exp: "Potential on equatorial line is zero."
+},
+{
+q: "Potential due to a dipole at a distant point on its axis is proportional to:",
+opts: [
+  "1/r",
+  "1/r^2",
+  "1/r^3",
+  "1/r^4"
+], correct: 1,
+exp: "Axial potential: V ∝ 1/r^2 for dipole."
+},
+{
+q: "Potential at a point due to several charges is equal to:",
+opts: [
+  "Product of individual potentials",
+  "Sum of individual potentials",
+  "Average of potentials",
+  "Difference of potentials"
+], correct: 1,
+exp: "Potential is a scalar; total = sum of individual potentials."
+},
+{
+q: "The electrostatic potential at the midpoint of a straight line joining two equal and opposite charges is:",
+opts: [
+  "Zero",
+  "Maximum",
+  "Minimum",
+  "Infinity"
+], correct: 0,
+exp: "Potentials add algebraically; equal and opposite charges cancel."
+},
+{
+q: "Which of the following best represents the shape of equipotential surfaces around an infinite line charge?",
+opts: [
+  "Planes perpendicular to the line",
+  "Cylinders coaxial with the line",
+  "Concentric spheres",
+  "Cones"
+], correct: 1,
+exp: "Equipotential surfaces are cylinders around a line charge."
+},
+{
+q: "Potential due to a uniformly charged thin spherical shell at a point inside the shell is:",
+opts: [
+  "Zero",
+  "Constant",
+  "Inversely proportional to r",
+  "Directly proportional to r"
+], correct: 1,
+exp: "Inside a shell, potential is constant."
+},
+{
+q: "If a unit charge is moved in a closed path in an electrostatic field, the net work done is:",
+opts: [
+  "Zero",
+  "Infinite",
+  "Equal to potential at the starting point",
+  "Equal to electric field at the starting point"
+], correct: 0,
+exp: "Electrostatic field is conservative; work done over closed path is zero."
+},
+{
+q: "Potential at a point due to multiple charges is independent of:",
+opts: [
+  "Path taken",
+  "Position of charges",
+  "Value of charges",
+  "Medium"
+], correct: 0,
+exp: "Potential is path-independent; only initial and final positions matter."
+},
+{
+q: "The electric potential energy of a system of three charges is:",
+opts: [
+  "Sum of potential energies of each pair",
+  "Product of all three charges",
+  "Sum of charges",
+  "Difference of potential energies"
+], correct: 0,
+exp: "U_total = sum of all unique pairwise potential energies."
+},
+{
+q: "If the potential at two points is the same, then the electric field between them:",
+opts: [
+  "Is zero",
+  "May or may not be zero",
+  "Is infinite",
+  "Is minimum"
+], correct: 0,
+exp: "Zero potential difference means zero electric field between points."
+},
+{
+q: "Potential due to a point charge at a distance r is V. What will be the potential at distance 2r?",
+opts: [
+  "V/2",
+  "V/4",
+  "2V",
+  "V"
+], correct: 0,
+exp: "V ∝ 1/r, so at 2r: V/2."
+},
+{
+q: "The potential at the centre of a regular hexagon with charge q at each vertex is:",
+opts: [
+  "6kq/a",
+  "0",
+  "kq/a",
+  "3kq/a"
+], correct: 0,
+exp: "All charges are at equal distance a from centre; V_total = 6kq/a."
+},
+{
+q: "Potential at a point due to a group of charges at different distances is:",
+opts: [
+  "Sum of kq_i/r_i for each charge",
+  "Product of kq_i/r_i for each charge",
+  "Average of kq_i/r_i",
+  "Sum of kq_i^2/r_i"
+], correct: 0,
+exp: "V = Σ kq_i/r_i."
+},
+{
+q: "The potential at the centre of a circular arc of radius r, subtending angle θ at centre and carrying charge Q uniformly, is:",
+opts: [
+  "(kQθ)/(2πr)",
+  "kQ/r",
+  "(kQ)/(2πr)",
+  "kQθ/r"
+], correct: 0,
+exp: "V = (kQθ)/(2πr) for a uniform arc."
+},
+{
+q: "The potential difference between two points in an electric field is numerically equal to:",
+opts: [
+  "Electric field × distance",
+  "Charge × distance",
+  "Force × charge",
+  "Electric field / distance"
+], correct: 0,
+exp: "V = E × d for uniform electric field."
+},
+{
+q: "In a uniform electric field E, the change in potential when moving a charge q through distance d parallel to the field is:",
+opts: [
+  "-qEd",
+  "qEd",
+  "Ed/q",
+  "-Ed/q"
+], correct: 0,
+exp: "ΔV = -E × d, so work = qΔV = -qEd."
+},
+{
+q: "If the potential at points A and B are 8 V and 4 V, the work done in moving 2 C charge from A to B is:",
+opts: [
+  "8 J",
+  "4 J",
+  "0 J",
+  "-8 J"
+], correct: 1,
+exp: "W = q(V_B - V_A) = 2 × (4 - 8) = -8 J (moving against potential)."
+},
+{
+q: "The equipotential surfaces due to two equal and opposite charges are:",
+opts: [
+  "Concentric spheres",
+  "Planes",
+  "Toroidal surfaces",
+  "Cylindrical surfaces"
+], correct: 2,
+exp: "They form toroidal (donut-shaped) surfaces."
+},
+{
+q: "Potential at the midpoint between two like charges is:",
+opts: [
+  "Zero",
+  "Positive",
+  "Negative",
+  "Infinity"
+], correct: 1,
+exp: "Both potentials add, giving a positive value."
+},
+{
+q: "The work done in moving a charge between two points on an equipotential surface:",
+opts: [
+  "Is always zero",
+  "Is always maximum",
+  "Depends on the path",
+  "Is equal to the charge moved"
+], correct: 0,
+exp: "No work is done along an equipotential surface."
+},
+{
+q: "If the electric field at a point is zero, the potential at that point:",
+opts: [
+  "Is zero",
+  "Is maximum",
+  "May be zero, maximum or minimum",
+  "Is always infinite"
+], correct: 2,
+exp: "Zero electric field does not always mean zero potential."
+},
+{
+q: "A hollow metallic sphere is given a positive charge. The potential inside the sphere is:",
+opts: [
+  "Zero",
+  "Constant and equal to that on the surface",
+  "Inversely proportional to r",
+  "Directly proportional to r"
+], correct: 1,
+exp: "Potential is constant inside a conductor."
+},
+{
+q: "The potential at the surface of a nucleus (radius r) having charge Ze is proportional to:",
+opts: [
+  "Z/r",
+  "Zr",
+  "Z/r^2",
+  "Z^2/r"
+], correct: 0,
+exp: "V = kZe/r; proportional to Z/r."
+},
+{
+q: "For a system of three charges at the corners of an equilateral triangle, the net potential at the centroid is:",
+opts: [
+  "Zero",
+  "Positive",
+  "Negative",
+  "Infinity"
+], correct: 1,
+exp: "All charges contribute equally, resulting in a non-zero (positive if charges are all +ve) potential."
+},
+{
+q: "The electric field intensity at a point where the potential is maximum:",
+opts: [
+  "Is minimum",
+  "Is zero",
+  "May not be zero",
+  "Is maximum"
+], correct: 2,
+exp: "Potential maximum does not imply field is zero."
+},
+{
+q: "A proton is moved from point A to point B. If potential at A is higher than at B, then:",
+opts: [
+  "Work is done by the field",
+  "Work is done against the field",
+  "No work is done",
+  "Potential energy increases"
+], correct: 0,
+exp: "Field does positive work in moving charge from high to low potential."
+},
+{
+q: "What is the potential at a point at distance r from an infinite plane sheet of charge with surface charge density σ?",
+opts: [
+  "σr/ε₀",
+  "2πσr/ε₀",
+  "σ/2ε₀",
+  "Infinite"
+], correct: 0,
+exp: "Potential varies linearly: V = σr/ε₀."
+},
+{
+q: "The potential energy of a dipole of moment p in uniform field E is:",
+opts: [
+  "pE cosθ",
+  "-pE cosθ",
+  "pE sinθ",
+  "-pE sinθ"
+], correct: 1,
+exp: "U = -pE cosθ."
+},
+{
+q: "The potential at a point on the axis of a uniformly charged disc of radius R and surface charge density σ at distance x from the center is:",
+opts: [
+  "(σ/2ε₀)[√(R²+x²)-x]",
+  "(σ/2ε₀)[√(R²+x²)+x]",
+  "(σ/ε₀)x",
+  "(σ/ε₀)R"
+], correct: 1,
+exp: "V = (σ/2ε₀)[√(R²+x²)+x]."
+},
+{
+q: "The potential due to an electric dipole at a distant point varies as:",
+opts: [
+  "1/r^2",
+  "1/r",
+  "1/r^3",
+  "r^2"
+], correct: 0,
+exp: "At large distances, V ∝ 1/r^2."
+},
+{
+q: "For a positive test charge, the direction of decrease of electrostatic potential is:",
+opts: [
+  "Along electric field",
+  "Opposite to electric field",
+  "Perpendicular to electric field",
+  "Random"
+], correct: 0,
+exp: "Potential decreases along the field for a positive charge."
+},
+{
+q: "If two equipotential surfaces are 2 cm apart and potential difference between them is 10 V, electric field is:",
+opts: [
+  "200 V/m",
+  "5 V/m",
+  "20 V/m",
+  "0.2 V/m"
+], correct: 2,
+exp: "E = ΔV/d = 10/0.02 = 500 V/m."
+},
+{
+q: "Potential at a distance r from a point charge q in a medium of dielectric constant k is:",
+opts: [
+  "kq/r",
+  "q/(4πε₀kr)",
+  "q/(4πε₀r)",
+  "k/(4πε₀q r)"
+], correct: 1,
+exp: "V = q/(4πε₀kr)."
+}
+];
+
+
+// Shuffle/restore logic and core test engine
+let shuffled = [];
+let timerInt = null;
+let remaining = TOTAL_TIME;
+let testStarted = false;
+let startTimestamp = null;
+let usedTime = 0;
+
+function shuffleArray(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    let j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function renderQuiz(shufOrder, selAnswers = {}) {
+  let form = document.getElementById('quizForm');
+  form.innerHTML = '';
+  for (let idx = 0; idx < shufOrder.length; idx++) {
+    const qObj = questionsData[shufOrder[idx]];
+    const qNum = idx + 1;
+    let qDiv = document.createElement('div');
+    qDiv.className = "question";
+    qDiv.innerHTML = `<p><strong>Q${qNum}.</strong> ${qObj.q}</p>`;
+    let optDiv = document.createElement('div');
+    optDiv.className = "options";
+    for (let opt = 0; opt < qObj.opts.length; opt++) {
+      let id = `q${qNum}o${opt}`;
+      let checked = (selAnswers[`q${qNum}`] === String.fromCharCode(65 + opt)) ? 'checked' : '';
+      optDiv.innerHTML += `<label><input type="radio" name="q${qNum}" value="${String.fromCharCode(65 + opt)}" id="${id}" ${checked}> ${qObj.opts[opt]}</label><br>`;
+    }
+    qDiv.appendChild(optDiv);
+    let expDiv = document.createElement('div');
+    expDiv.className = "explanation";
+    expDiv.id = `exp${qNum}`;
+    expDiv.style.display = 'none';
+    expDiv.textContent = qObj.exp;
+    qDiv.appendChild(expDiv);
+    form.appendChild(qDiv);
+  }
+
+  // Save answers on every change (refresh-resume logic)
+  setTimeout(() => {
+    document.querySelectorAll('input[type=radio]').forEach(radio => {
+      radio.addEventListener('change', function() {
+        let sel = {};
+        for(let i=1; i<=shufOrder.length; i++) {
+          let options = document.getElementsByName("q"+i);
+          for(let op of options) if(op.checked) sel['q'+i]=op.value;
+        }
+        localStorage.setItem(SEL_KEY, JSON.stringify(sel));
+      });
+    });
+  }, 100);
+}
+
+function formatTime(sec) {
+  let m = Math.floor(sec/60), s = sec%60;
+  return `${m}m ${s<10?'0'+s:s}s`;
+}
+
+function updateTimer() {
+  let timerElem = document.getElementById('timer');
+  if (remaining > 0) {
+    timerElem.innerHTML = "Time Left: " + formatTime(remaining);
+    remaining--;
+    localStorage.setItem(TIMELEFT_KEY, remaining);
+  } else {
+    timerElem.innerHTML = "Time Left: 0m 00s";
+    stopTimer();
+    autoSubmit();
+  }
+}
+
+function startTimer() {
+  testStarted = true;
+  startTimestamp = Date.now();
+  if (timerInt) clearInterval(timerInt);
+  document.getElementById('timer').innerHTML = "Time Left: " + formatTime(remaining);
+  timerInt = setInterval(updateTimer, 1000);
+}
+
+function stopTimer() {
+  if(timerInt) clearInterval(timerInt);
+  if (testStarted && startTimestamp) {
+    usedTime = Math.max(TOTAL_TIME - remaining, 0);
+  }
+}
+
+window.onload = function() {
+  let locked = localStorage.getItem(LOCK_KEY);
+  let shuffleSaved = localStorage.getItem(SHUFFLE_KEY);
+  let selSaved = localStorage.getItem(SEL_KEY);
+  let tleft = parseInt(localStorage.getItem(TIMELEFT_KEY));
+  if (locked === 'yes' && shuffleSaved) {
+    shuffled = JSON.parse(shuffleSaved);
+    let sel = JSON.parse(selSaved || '{}');
+    renderQuiz(shuffled, sel);
+    markQuiz(sel, true);
+    document.getElementById('timer').innerHTML = "Total Time: " + formatTime(TOTAL_TIME);
+    document.getElementById("lockedMsg").style.display = "";
+    document.getElementById("saveBtn").style.display = "";
+    document.getElementById("submitBtn").disabled = true;
+    document.getElementById("quizForm").classList.add("disabled");
+    for (let i = 1; i <= shuffled.length; i++) document.getElementById("exp"+i).style.display="block";
+    let radios = document.querySelectorAll('input[type=radio]');
+    radios.forEach(r => r.disabled = true);
+    // Restore the score/result box
+    let scoreHtml = localStorage.getItem(SCORE_KEY) || '';
+    let prevResult = document.querySelector('.result');
+    if (prevResult) prevResult.remove();
+    if (scoreHtml) {
+      document.getElementById("quizForm").insertAdjacentHTML("afterend", scoreHtml);
+    }
+  }
+  else if (shuffleSaved && selSaved && tleft > 0) {
+    shuffled = JSON.parse(shuffleSaved);
+    let sel = JSON.parse(selSaved || '{}');
+    renderQuiz(shuffled, sel);
+    remaining = tleft;
+    startTimer();
+  } else {
+    shuffled = Array.from(Array(questionsData.length).keys());
+    shuffleArray(shuffled);
+    renderQuiz(shuffled);
+    localStorage.setItem(SHUFFLE_KEY, JSON.stringify(shuffled));
+    remaining = TOTAL_TIME;
+    localStorage.setItem(TIMELEFT_KEY, remaining);
+    startTimer();
+  }
+};
+
+function autoSubmit() {
+  if(localStorage.getItem(LOCK_KEY)==='yes') return;
+  alert("Time is up! The test will be auto-submitted.");
+  submitQuiz();
+}
+
+function submitQuiz() {
+  if(localStorage.getItem(LOCK_KEY)==='yes') return;
+  let sel = {};
+  let total = shuffled.length, score = 0;
+  for(let i=1; i<=total; i++) {
+    let options = document.getElementsByName("q"+i);
+    for(let op of options) {
+      if(op.checked) sel['q'+i]=op.value;
+    }
+  }
+  score = markQuiz(sel, false);
+  for(let i=1; i<=total; i++) document.getElementById("exp"+i).style.display="block";
+  stopTimer();
+  let timeUsed = TOTAL_TIME - remaining;
+  if(timeUsed <= 0 || isNaN(timeUsed)) timeUsed = TOTAL_TIME;
+  let percent = ((score/total)*100).toFixed(2);
+  let resultText = `<div class="result"><div>Test submitted!</div><br><span style="font-size: 2em; color: #326c33;"><b>Score: ${score} / ${total} (${percent}%)</b></span><br><span id="timeStr">Time: ${formatTime(timeUsed)}</span></div>`;
+  let resultDiv = document.getElementById("result");
+  if (resultDiv) resultDiv.outerHTML = resultText;
+  else document.getElementById("quizForm").insertAdjacentHTML("afterend", resultText);
+  document.getElementById("usedTime").innerHTML = ``;
+  document.getElementById("usedTime").style.display = "none";
+  document.getElementById("submitBtn").disabled = true;
+  document.getElementById("quizForm").classList.add("disabled");
+  document.getElementById("saveBtn").style.display="";
+  document.getElementById("lockedMsg").style.display="";
+  let radios = document.querySelectorAll('input[type=radio]');
+  radios.forEach(r => r.disabled = true);
+  localStorage.setItem(LOCK_KEY, 'yes');
+  localStorage.setItem(SEL_KEY, JSON.stringify(sel));
+  localStorage.setItem(SCORE_KEY, resultText);
+  localStorage.setItem(TIME_KEY, timeUsed);
+  localStorage.setItem(SHUFFLE_KEY, JSON.stringify(shuffled));
+  localStorage.removeItem(TIMELEFT_KEY);
+}
+
+function markQuiz(sel, reviewMode) {
+  let score = 0, total = shuffled.length;
+  for(let i=1; i<=total; i++) {
+    let user = sel['q'+i];
+    let radios = document.getElementsByName("q"+i);
+    for(let op of radios) {
+      op.parentElement.classList.remove('correct','incorrect');
+      let oldMark = op.parentElement.querySelector('.unattended');
+      if (oldMark) oldMark.remove();
+    }
+    let qIdx = shuffled[i-1];
+    let correctIdx = questionsData[qIdx].correct;
+    let correctLetter = String.fromCharCode(65 + correctIdx);
+
+    if(user) {
+      for(let op of radios) {
+        if(op.value===user) {
+          if(op.value===correctLetter) {
+            score++;
+            op.parentElement.classList.add('correct');
+          } else {
+            op.parentElement.classList.add('incorrect');
+          }
+        }
+      }
+    } else {
+      let parent = radios[radios.length-1]?.parentElement?.parentElement;
+      if (parent && !parent.querySelector('.unattended')) {
+        let label = document.createElement("span");
+        label.className = "unattended";
+        label.innerText = "Un Attended";
+        parent.appendChild(label);
+      }
+    }
+    for(let op of radios) {
+      if(op.value===correctLetter) op.parentElement.classList.add('correct');
+    }
+    document.getElementById("exp"+i).style.display="block";
+  }
+  return score;
+}
+
+function saveReview() {
+  let clone = document.documentElement.cloneNode(true);
+  let scripts = clone.querySelectorAll('script');
+  scripts.forEach(s => s.remove());
+  let submitBtn = clone.querySelector('.submit-btn');
+  if (submitBtn) submitBtn.remove();
+  let saveBtn = clone.querySelector('.save-btn');
+  if (saveBtn) saveBtn.remove();
+  let timerElem = clone.querySelector('#timer');
+  if (timerElem) timerElem.remove();
+  let lockedMsg = clone.querySelector('#lockedMsg');
+  if (lockedMsg) lockedMsg.style.display = "";
+  let quizForm = clone.querySelector('#quizForm');
+  if (quizForm) quizForm.classList.add('disabled');
+  let radios = clone.querySelectorAll('input[type=radio]');
+  radios.forEach(r => {
+    r.disabled = true;
+    r.setAttribute('disabled', 'disabled');
+  });
+  let html = "<!DOCTYPE html>\n" + clone.outerHTML.replace(/<title>(.*?)<\/title>/, '<title>$1 (Review Only)</title>');
+  let blob = new Blob([html], {type:"text/html"});
+  let a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "Electrostatic Potential.html";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+</script>
+</body>
+</html>
